@@ -935,7 +935,7 @@ function renderDayList(){
 
     const isActive=state==='activo'||state==='hoy';
     const isDimmed=state==='pasado'||state==='off';
-    const isNav=isActive&&!isWeekend;
+    const isNav=isActive;
     const paused=diasPausados[key];
 
     const badgeMap={pasado:'badge-pasado',hoy:'badge-hoy',activo:'badge-activo',off:'badge-off'};
@@ -965,7 +965,7 @@ function renderDayList(){
 
 function goToDayPlatos(idx){
   selDay=idx;
-  const date=menuWeekDates()[idx];
+  const date=(idx<5?menuWeekDates():weekDates())[idx];
   document.getElementById('menu-day-list').style.display='none';
   document.getElementById('menu-platos-view').style.display='flex';
   document.getElementById('menu-topbar').innerHTML=
@@ -992,7 +992,7 @@ function togDiaPause(key,e){
 const ICONS=['🍖','🍗','🥧','🥘','🍲','🥗','🍝','🍛','🫕','🥩','🐟','🌯','🥚','🍳'];
 
 function renderPlatos(){
-  const d=DIAS_KEY[selDay];
+  const d=DIAS_7K[selDay];
   const pl=MENU[d]||[];
   const editable=getDayEditable(selDay);
 
