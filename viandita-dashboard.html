@@ -316,6 +316,9 @@ body{
 .btn-save.ok{ background:var(--gr); }
 .btn-add-plato{ width:100%; padding:13px; border-radius:13px; border:1.5px dashed var(--bd2); background:none; color:var(--tx3); font-size:var(--sm); cursor:pointer; margin-top:4px; }
 .btn-add-plato:active{ border-color:var(--p); color:var(--p); }
+.day-tab.blocked{opacity:.4}
+.day-locked-msg{background:var(--c1);border:1px solid var(--bd);border-radius:13px;padding:24px 16px;text-align:center;color:var(--tx3);font-size:var(--sm);line-height:1.6}
+.dia-tog.fixed{cursor:default}
 
 /* ─── PLANES ──────────────────────────────────────────────── */
 .plan-card{ background:var(--c1); border:1.5px solid var(--bd); border-radius:15px; padding:16px; margin-bottom:10px; }
@@ -669,6 +672,19 @@ const COMBOS=[
 // ── HELPERS ────────────────────────────────────────────────────
 const f=n=>'$'+n.toLocaleString('es-AR');
 const isSun=()=>new Date().getDay()===0;
+const isSat=()=>new Date().getDay()===6;
+// Returns Mon=0…Fri=4, or -1 on weekend
+function todayMenuIdx(){const d=new Date().getDay();if(d===0||d===6)return -1;return d-1;}
+// Is day i (0=Mon…4=Fri) editable in the menu?
+function getDayEditable(i){if(isSun())return true;const ti=todayMenuIdx();if(ti===-1)return false;return i>=ti;}
+// Returns Mon-Fri dates for the week to display in menu (next week on Sunday)
+function menuWeekDates(){
+  if(isSun()){
+    const mon=new Date();mon.setDate(mon.getDate()+1);mon.setHours(0,0,0,0);
+    return Array.from({length:5},(_,i)=>{const x=new Date(mon);x.setDate(mon.getDate()+i);return x;});
+  }
+  return weekDates().slice(0,5);
+}
 
 function weekDates(){
   const now=new Date(), d=now.getDay();
@@ -700,7 +716,7 @@ function renderBanner(elId,timerElId){
     el.innerHTML=`<div class="s-banner open" style="margin:0 0 14px">
       <div style="display:flex;align-items:center;gap:10px">
         <div class="s-dot"></div>
-        <div class="s-txt"><strong>Menú abierto</strong><br>Editá hasta las 23:59</div>
+        <div class="s-txt"><strong>Menú abierto</strong><br>Cargá la semana completa antes de las 23:59</div>
       </div>
       <div class="s-timer" id="${timerElId}">--:--:--</div>
     </div>`;
@@ -713,10 +729,15 @@ function renderBanner(elId,timerElId){
     }
     tick(); if(timerRef) clearInterval(timerRef);
     timerRef=setInterval(tick,1000);
-  } else {
+  } else if(isSat()){
     el.innerHTML=`<div class="s-banner locked" style="margin:0 0 14px">
       <div class="s-dot"></div>
-      <div class="s-txt"><strong>Menú confirmado</strong><br>Solo podés editar el acompañamiento</div>
+      <div class="s-txt"><strong>Semana cerrada</strong><br>Volvé el domingo para cargar la próxima semana</div>
+    </div>`;
+  } else {
+    el.innerHTML=`<div class="s-banner open" style="margin:0 0 14px">
+      <div class="s-dot"></div>
+      <div class="s-txt"><strong>Semana en curso</strong><br>Podés cargar o editar desde hoy hasta el viernes</div>
     </div>`;
   }
 }
@@ -872,19 +893,28 @@ function togEnt(ci,ei){
 
 // ── MENÚ ───────────────────────────────────────────────────────
 function renderMenu(){
+  // Arrange el tab seleccionado al primer día editable
+  if(isSun()){
+    selDay=0;
+  } else {
+    const ti=todayMenuIdx();
+    selDay=ti===-1?4:ti;
+  }
   renderBanner('menu-banner','menu-timer');
   renderDayTabs();
   renderPlatos();
 }
 
 function renderDayTabs(){
-  const wk=weekDates();
+  const wk=menuWeekDates();
   document.getElementById('day-tabs').innerHTML=
-    DIAS_KEY.map((d,i)=>`
-      <div class="day-tab ${i===selDay?'on':''}" onclick="selD(${i})">
+    DIAS_KEY.map((d,i)=>{
+      const editable=getDayEditable(i);
+      return`<div class="day-tab ${i===selDay?'on':''} ${!editable?'blocked':''}" onclick="selD(${i})">
         <span class="day-tab-nm">${DIAS_CORTO[i]}</span>
         <span class="day-tab-n">${wk[i].getDate()}</span>
-      </div>`).join('');
+      </div>`;
+    }).join('');
 }
 
 function selD(i){ selDay=i; renderDayTabs(); renderPlatos(); }
@@ -894,7 +924,27 @@ const ICONS=['🍖','🍗','🥧','🥘','🍲','🥗','🍝','🍛','🫕','�
 function renderPlatos(){
   const d=DIAS_KEY[selDay];
   const pl=MENU[d]||[];
-  const open=isSun();
+  const editable=getDayEditable(selDay);
+
+  if(!editable){
+    const platosHtml=pl.length
+      ? '<div style="margin-top:16px;text-align:left">'+pl.map(p=>
+          `<div style="background:var(--c2);border-radius:10px;padding:10px 12px;margin-top:8px;display:flex;align-items:center;gap:10px">
+            <span style="font-size:18px">${p.icon}</span>
+            <div><div style="font-size:var(--sm);font-weight:500;color:var(--tx2)">${p.nm}</div>
+            <div style="font-size:var(--xs);color:var(--tx3)">${p.acomp}</div></div>
+          </div>`).join('')+'</div>'
+      : '';
+    document.getElementById('platos-wrap').innerHTML=
+      `<div class="day-locked-msg">
+        <div style="font-size:22px;margin-bottom:8px">🔒</div>
+        <div style="font-weight:600;color:var(--tx2);margin-bottom:6px">Día no editable</div>
+        <div>Este día ya pasó. Solo podés editar desde hoy hasta el viernes.</div>
+        ${platosHtml}
+      </div>`;
+    return;
+  }
+
   document.getElementById('platos-wrap').innerHTML=
     pl.map((p,i)=>`
       <div class="plato-card">
@@ -908,7 +958,7 @@ function renderPlatos(){
         <div class="plato-f-row">
           <div>
             <label class="input-lbl">Precio</label>
-            <input class="input-f" type="number" value="${p.precio}" ${!open?'readonly':''} onchange="MENU['${d}'][${i}].precio=+this.value">
+            <input class="input-f" type="number" value="${p.precio}" onchange="MENU['${d}'][${i}].precio=+this.value">
           </div>
           <div>
             <label class="input-lbl">Disponibles</label>
@@ -918,7 +968,7 @@ function renderPlatos(){
         <div>
           <div class="acomp-hdr">
             <label class="input-lbl" style="margin-bottom:0">Acompañamiento</label>
-            <span class="acomp-tag ${open?'open':'locked'}">${open?'✏️ editable':'🔒 fijo'}</span>
+            <span class="acomp-tag open">✏️ editable</span>
           </div>
           <input class="input-f" style="margin-top:6px" value="${p.acomp}" placeholder="Ej: Puré de papas" onchange="MENU['${d}'][${i}].acomp=this.value">
         </div>
@@ -976,14 +1026,23 @@ function addPlan(){ PLANES.push({nm:'Nuevo plan',desc:'',precio:0,ahorro:0,feat:
 // ── PERFIL ─────────────────────────────────────────────────────
 function renderPerfil(){
   document.getElementById('dias-tog').innerHTML=
-    DIAS_7.map((nm,i)=>`
-      <div class="dia-tog ${diasActivos[DIAS_7K[i]]?'on':''}" onclick="togDia('${DIAS_7K[i]}')">
-        <span class="dia-tog-nm">${nm}</span>
-        <span class="dia-tog-dot"></span>
-      </div>`).join('');
+    DIAS_7.map((nm,i)=>{
+      const isWeekend=i>=5; // Sáb=5, Dom=6
+      const active=diasActivos[DIAS_7K[i]];
+      // Lun-Vie siempre activos y no togglables; Sáb/Dom toggleables
+      return`<div class="dia-tog on ${!isWeekend?'fixed':''}" ${isWeekend?`onclick="togDia('${DIAS_7K[i]}')"`:''} ${!active&&isWeekend?'style="border-color:var(--bd2);background:var(--c1)"':''}>
+        <span class="dia-tog-nm" ${!active&&isWeekend?'style="color:var(--tx3)"':''}>${nm}</span>
+        <span class="dia-tog-dot" ${!active&&isWeekend?'style="background:var(--bd2)"':''}></span>
+      </div>`;
+    }).join('');
 }
 
-function togDia(k){ diasActivos[k]=!diasActivos[k]; renderPerfil(); renderWeekStrip(); }
+function togDia(k){
+  if(k!=='sab'&&k!=='dom') return;
+  diasActivos[k]=!diasActivos[k];
+  renderPerfil();
+  renderWeekStrip();
+}
 function toggleVac(){ vacaciones=!vacaciones; document.getElementById('vac-sw').classList.toggle('on',vacaciones); renderWeekStrip(); }
 function updateUrl(v){ document.getElementById('url-prev').textContent='viandita.com.ar/'+v.toLowerCase().replace(/\s/g,''); }
 function savePerfil(){
