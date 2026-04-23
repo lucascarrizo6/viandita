@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="description" content="Viandita — Tu cocina, tu negocio. La plataforma para cocineros que quieren vender viandas caseras sin complicaciones.">
+<meta name="theme-color" content="#FFF8F0">
+<title>Viandita — Tu cocina, tu negocio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+:root{
+  --bg:#FFF8F0;--surface:#fff;
+  --p:#D4552A;--p-lt:#FAF0EA;--p-dk:#A33D1B;
+  --tx:#2D1B0E;--tx2:#7A5C46;--tx3:#B39480;
+  --bd:#EDE0D4;--green:#4A7C3A;--green-bg:#EBF4E6;
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',system-ui,sans-serif;
+  --sab:env(safe-area-inset-bottom,0px);
+  --pad:clamp(20px,6vw,80px);
+  --xs:clamp(11px,2.5vw,13px);--sm:clamp(13px,3vw,15px);
+  --base:clamp(15px,3.5vw,17px);--lg:clamp(18px,4vw,22px);
+  --xl:clamp(26px,5vw,36px);--2xl:clamp(36px,7vw,56px);--3xl:clamp(44px,9vw,72px);
+}
+body{font-family:var(--fb);background:var(--bg);color:var(--tx);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 var(--pad);height:64px;display:flex;align-items:center;justify-content:space-between;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(255,248,240,.92);border-bottom-color:var(--bd);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.nav-logo{font-family:var(--fd);font-size:22px;font-weight:600;color:var(--p);text-decoration:none;letter-spacing:-.5px}
+.nav-links{display:flex;align-items:center;gap:clamp(16px,3vw,32px)}
+.nav-links a{font-size:var(--sm);color:var(--tx2);text-decoration:none;transition:color .15s}
+.nav-links a:hover{color:var(--p)}
+.nav-cta{background:var(--p);color:#fff;border:none;border-radius:10px;padding:10px 20px;font-family:var(--fb);font-size:var(--sm);font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+@media(max-width:600px){.nav-links a{display:none}}
+
+/* SECTIONS */
+section{padding:clamp(60px,10vw,120px) var(--pad)}
+.section-label{font-size:var(--xs);font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--p);margin-bottom:12px}
+
+/* HERO */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding-top:80px;position:relative;overflow:hidden}
+.hero-pattern{position:absolute;inset:0;opacity:.05;background-image:radial-gradient(circle,#D4552A 1.5px,transparent 1.5px);background-size:28px 28px;pointer-events:none}
+.hero-blob{position:absolute;top:-20%;right:-15%;width:clamp(300px,60vw,700px);height:clamp(300px,60vw,700px);border-radius:50%;background:radial-gradient(circle,#F5E0D0 0%,transparent 70%);pointer-events:none;opacity:.6}
+.hero-content{position:relative;max-width:700px}
+.hero h1{font-family:var(--fd);font-size:var(--3xl);font-weight:600;line-height:1.05;margin-bottom:20px;letter-spacing:-.5px}
+.hero h1 em{font-style:italic;color:var(--p)}
+.hero p{font-size:var(--lg);color:var(--tx2);line-height:1.65;max-width:520px;margin-bottom:36px}
+.hero-btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn-primary{background:var(--p);color:#fff;border:none;border-radius:12px;padding:16px 28px;font-family:var(--fb);font-size:var(--base);font-weight:600;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:background .15s}
+.btn-primary:hover{background:var(--p-dk)}
+.btn-ghost{background:none;color:var(--tx);border:1.5px solid var(--bd);border-radius:12px;padding:15px 28px;font-family:var(--fb);font-size:var(--base);font-weight:500;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:border-color .15s}
+.btn-ghost:hover{border-color:var(--p);color:var(--p)}
+.hero-stats{display:flex;flex-wrap:wrap;gap:clamp(24px,4vw,48px);margin-top:clamp(40px,6vw,72px);padding-top:clamp(24px,4vw,40px);border-top:1px solid var(--bd)}
+.stat-num{font-family:var(--fd);font-size:var(--xl);font-weight:600;color:var(--tx);line-height:1}
+.stat-lbl{font-size:var(--xs);color:var(--tx3);margin-top:4px}
+
+/* HOW IT WORKS */
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(16px,3vw,32px);margin-top:clamp(32px,5vw,56px)}
+.how-card{background:var(--surface);border:1px solid var(--bd);border-radius:20px;padding:clamp(20px,4vw,32px)}
+.how-card-num{font-family:var(--fd);font-size:clamp(36px,6vw,52px);font-weight:600;color:var(--p-lt);line-height:1;margin-bottom:16px;-webkit-text-stroke:1.5px var(--p);color:transparent}
+.how-card h3{font-family:var(--fd);font-size:var(--lg);font-weight:600;margin-bottom:10px}
+.how-card p{font-size:var(--sm);color:var(--tx2);line-height:1.65}
+
+/* AUDIENCE SPLIT */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,3vw,24px);margin-top:clamp(32px,5vw,48px)}
+@media(max-width:640px){.split{grid-template-columns:1fr}}
+.split-card{border-radius:20px;padding:clamp(24px,4vw,36px)}
+.split-card.cocinero{background:var(--p);color:#fff}
+.split-card.cliente{background:var(--surface);border:1.5px solid var(--bd)}
+.split-tag{font-size:var(--xs);font-weight:600;letter-spacing:1.2px;text-transform:uppercase;opacity:.7;margin-bottom:14px}
+.split-card.cocinero .split-tag{color:rgba(255,255,255,.7)}
+.split-card.cliente .split-tag{color:var(--tx3)}
+.split-card h3{font-family:var(--fd);font-size:var(--xl);font-weight:600;margin-bottom:16px;line-height:1.2}
+.split-card.cocinero h3{color:#fff}
+.split-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.split-list li{font-size:var(--sm);display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.split-card.cocinero .split-list li{color:rgba(255,255,255,.85)}
+.split-card.cliente .split-list li{color:var(--tx2)}
+.check{width:20px;height:20px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:1px}
+.split-card.cocinero .check{background:rgba(255,255,255,.2);color:#fff}
+.split-card.cliente .check{background:var(--green-bg);color:var(--green)}
+
+/* QUIENES SOMOS */
+.about-wrap{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,6vw,80px);align-items:center}
+@media(max-width:700px){.about-wrap{grid-template-columns:1fr}}
+.about-img{background:var(--p-lt);border-radius:24px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.about-img-inner{font-size:clamp(80px,15vw,120px);opacity:.3}
+.about-accent{position:absolute;bottom:20px;left:20px;background:var(--p);color:#fff;border-radius:12px;padding:12px 16px;font-size:var(--xs)}
+.about-accent strong{display:block;font-family:var(--fd);font-size:var(--lg);line-height:1}
+.about-text h2{font-family:var(--fd);font-size:var(--2xl);font-weight:600;line-height:1.15;margin-bottom:20px}
+.about-text h2 em{font-style:italic;color:var(--p)}
+.about-text p{font-size:var(--base);color:var(--tx2);line-height:1.75;margin-bottom:16px}
+.about-text p:last-child{margin-bottom:0}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(16px,3vw,24px);margin-top:clamp(32px,5vw,56px)}
+.price-card{background:var(--surface);border:1.5px solid var(--bd);border-radius:20px;padding:clamp(24px,4vw,32px);position:relative;transition:border-color .2s,transform .2s}
+.price-card:hover{transform:translateY(-4px)}
+.price-card.featured{border-color:var(--p)}
+.feat-badge{position:absolute;top:-13px;left:24px;background:var(--p);color:#fff;font-size:var(--xs);font-weight:600;padding:4px 14px;border-radius:20px}
+.price-name{font-size:var(--sm);font-weight:600;color:var(--tx2);margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.price-amount{font-family:var(--fd);font-size:var(--2xl);font-weight:600;line-height:1;margin-bottom:4px}
+.price-period{font-size:var(--xs);color:var(--tx3);margin-bottom:20px}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.price-features li{font-size:var(--sm);color:var(--tx2);display:flex;align-items:flex-start;gap:10px;line-height:1.5}
+.pf-check{color:var(--green);font-size:13px;flex-shrink:0;margin-top:1px}
+.price-btn{width:100%;padding:14px;border-radius:12px;font-family:var(--fb);font-size:var(--sm);font-weight:600;cursor:pointer;border:1.5px solid var(--bd);background:none;color:var(--tx);transition:background .15s,border-color .15s,color .15s}
+.price-card.featured .price-btn{background:var(--p);border-color:var(--p);color:#fff}
+.price-btn:hover:not(.featured .price-btn){border-color:var(--p);color:var(--p)}
+
+/* FORM UNIRSE */
+.join-wrap{background:var(--p);border-radius:24px;padding:clamp(32px,6vw,56px);display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,64px);align-items:center}
+@media(max-width:680px){.join-wrap{grid-template-columns:1fr}}
+.join-text h2{font-family:var(--fd);font-size:var(--2xl);font-weight:600;color:#fff;line-height:1.15;margin-bottom:14px}
+.join-text h2 em{font-style:italic;opacity:.8}
+.join-text p{font-size:var(--base);color:rgba(255,255,255,.75);line-height:1.65}
+.join-form{display:flex;flex-direction:column;gap:12px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:400px){.form-row{grid-template-columns:1fr}}
+.form-input{width:100%;padding:14px 16px;border-radius:12px;border:none;background:rgba(255,255,255,.15);color:#fff;font-family:var(--fb);font-size:var(--sm);outline:none;transition:background .15s}
+.form-input::placeholder{color:rgba(255,255,255,.5)}
+.form-input:focus{background:rgba(255,255,255,.25)}
+select.form-input option{color:var(--tx);background:#fff}
+.form-submit{padding:16px;border-radius:12px;background:#fff;color:var(--p);border:none;font-family:var(--fb);font-size:var(--base);font-weight:600;cursor:pointer;transition:opacity .15s}
+.form-submit:hover{opacity:.9}
+.form-note{font-size:var(--xs);color:rgba(255,255,255,.5);text-align:center}
+
+/* FOOTER */
+footer{padding:clamp(32px,5vw,56px) var(--pad) calc(clamp(24px,4vw,40px) + var(--sab));border-top:1px solid var(--bd);display:grid;grid-template-columns:1fr auto;align-items:start;gap:32px}
+@media(max-width:500px){footer{grid-template-columns:1fr}}
+.footer-logo{font-family:var(--fd);font-size:20px;font-weight:600;color:var(--p);margin-bottom:8px}
+.footer-copy{font-size:var(--xs);color:var(--tx3);line-height:1.6}
+.footer-links{display:flex;gap:clamp(16px,3vw,32px)}
+.footer-links a{font-size:var(--xs);color:var(--tx3);text-decoration:none}
+.footer-links a:hover{color:var(--p)}
+
+/* ANIMATIONS */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
+.fade-up.visible{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#">viandita</a>
+  <div class="nav-links">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#nosotros">Nosotros</a>
+    <a href="#precios">Precios</a>
+    <a class="nav-cta" href="#unirse">Quiero sumarme</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-pattern"></div>
+  <div class="hero-blob"></div>
+  <div class="hero-content fade-up">
+    <div class="section-label">Para cocineros que quieren crecer</div>
+    <h1>Tu cocina,<br><em>tu negocio.</em></h1>
+    <p>Viandita te da todo lo que necesitás para vender viandas caseras: tu página propia, tu menú semanal y tus pedidos directo por WhatsApp.</p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="#unirse">Quiero sumarme →</a>
+      <a class="btn-ghost" href="#como-funciona">Ver cómo funciona</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">Sin comisiones</div>
+        <div class="stat-lbl">Solo una suscripción fija</div>
+      </div>
+      <div>
+        <div class="stat-num">5 min</div>
+        <div class="stat-lbl">Para tener tu página lista</div>
+      </div>
+      <div>
+        <div class="stat-num">100%</div>
+        <div class="stat-lbl">Tus clientes, tu relación</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section id="como-funciona">
+  <div class="section-label">Cómo funciona</div>
+  <h2 style="font-family:var(--fd);font-size:var(--2xl);font-weight:600;line-height:1.15;max-width:500px" class="fade-up">Simple para el cocinero.<br><em style="color:var(--p);font-style:italic">Simple para el cliente.</em></h2>
+  <div class="how-grid">
+    <div class="how-card fade-up">
+      <div class="how-card-num">01</div>
+      <h3>Te registrás</h3>
+      <p>Completás tu perfil, subís tu foto, escribís tu bio y configurás tu zona y horario de entrega. En cinco minutos tenés tu página.</p>
+    </div>
+    <div class="how-card fade-up">
+      <div class="how-card-num">02</div>
+      <h3>Cargás el menú</h3>
+      <p>Cada domingo antes de medianoche cargás el menú de la semana siguiente: el plato principal y el acompañamiento de cada día.</p>
+    </div>
+    <div class="how-card fade-up">
+      <div class="how-card-num">03</div>
+      <h3>Tus clientes piden</h3>
+      <p>Compartís tu link o QR. Los clientes entran, ven tu menú, eligen y te mandan el pedido directo por WhatsApp. Sin intermediarios.</p>
+    </div>
+    <div class="how-card fade-up">
+      <div class="how-card-num">04</div>
+      <h3>Cobrás y entregás</h3>
+      <p>Vos manejás los cobros y las entregas como más te convenga. Nosotros te damos la herramienta, el negocio es tuyo.</p>
+    </div>
+  </div>
+
+  <div class="split fade-up" style="margin-top:clamp(48px,7vw,80px)">
+    <div class="split-card cocinero">
+      <div class="split-tag">Para cocineros</div>
+      <h3>Tu negocio sin depender de nadie</h3>
+      <ul class="split-list">
+        <li><span class="check">✓</span>Página propia con tu URL (viandita.com.ar/vos)</li>
+        <li><span class="check">✓</span>Menú semanal con platos y acompañamientos</li>
+        <li><span class="check">✓</span>Planes y combos configurables</li>
+        <li><span class="check">✓</span>Pedidos directo a tu WhatsApp</li>
+        <li><span class="check">✓</span>Sin comisión por venta</li>
+        <li><span class="check">✓</span>QR para imprimir y compartir</li>
+      </ul>
+    </div>
+    <div class="split-card cliente">
+      <div class="split-tag">Para clientes</div>
+      <h3>Comida casera de verdad</h3>
+      <ul class="split-list">
+        <li><span class="check">✓</span>Menú semanal claro, sin sorpresas</li>
+        <li><span class="check">✓</span>Pedido fácil desde el celular</li>
+        <li><span class="check">✓</span>Contacto directo con quien cocina</li>
+        <li><span class="check">✓</span>Opciones de planes semanales y mensuales</li>
+        <li><span class="check">✓</span>Siempre sabés qué estás comiendo</li>
+        <li><span class="check">✓</span>Podés pedirle cambios al cocinero</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- QUIÉNES SOMOS -->
+<section id="nosotros" style="background:var(--surface);border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)">
+  <div class="about-wrap">
+    <div class="about-img fade-up">
+      <div class="about-img-inner">🍱</div>
+      <div class="about-accent">
+        <strong>2026</strong>
+        Nacimos en Argentina
+      </div>
+    </div>
+    <div class="about-text fade-up">
+      <div class="section-label">Quiénes somos</div>
+      <h2>Creamos Viandita porque <em>la comida casera merece más</em></h2>
+      <p>Somos un equipo que vio de cerca el esfuerzo de cocineros y cocineras que hacen un producto increíble pero no tienen las herramientas para venderlo bien.</p>
+      <p>Vimos cómo se pierden clientes por no tener una página, cómo se mezclan pedidos en grupos de WhatsApp y cómo el tiempo en el negocio se va en gestión en vez de cocina.</p>
+      <p>Viandita existe para cambiar eso. Sin comisiones, sin intermediarios, sin complicaciones. Solo vos, tu cocina y tus clientes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PRECIOS -->
+<section id="precios">
+  <div class="section-label">Planes para cocineros</div>
+  <h2 style="font-family:var(--fd);font-size:var(--2xl);font-weight:600;line-height:1.15;max-width:500px" class="fade-up">Un precio fijo.<br><em style="color:var(--p);font-style:italic">Sin sorpresas.</em></h2>
+  <p style="font-size:var(--base);color:var(--tx2);margin-top:12px;max-width:480px" class="fade-up">Sin comisión por venta. Lo que ganás es tuyo.</p>
+  <div class="pricing-grid">
+    <div class="price-card fade-up">
+      <div class="price-name">Básico</div>
+      <div class="price-amount">$8.000</div>
+      <div class="price-period">por mes · pago mensual</div>
+      <ul class="price-features">
+        <li><span class="pf-check">✓</span>Tu página propia con URL única</li>
+        <li><span class="pf-check">✓</span>Menú semanal (hasta 5 platos)</li>
+        <li><span class="pf-check">✓</span>Pedidos por WhatsApp</li>
+        <li><span class="pf-check">✓</span>QR descargable</li>
+        <li><span class="pf-check">✓</span>Sin comisión por venta</li>
+      </ul>
+      <button class="price-btn" onclick="scrollToJoin()">Empezar gratis 14 días</button>
+    </div>
+    <div class="price-card featured fade-up">
+      <div class="feat-badge">Más popular</div>
+      <div class="price-name">Pro</div>
+      <div class="price-amount">$14.000</div>
+      <div class="price-period">por mes · pago mensual</div>
+      <ul class="price-features">
+        <li><span class="pf-check">✓</span>Todo lo del plan Básico</li>
+        <li><span class="pf-check">✓</span>Menú sin límite de platos</li>
+        <li><span class="pf-check">✓</span>Planes y combos semanales/mensuales</li>
+        <li><span class="pf-check">✓</span>Dashboard con resumen de pedidos</li>
+        <li><span class="pf-check">✓</span>Soporte prioritario</li>
+      </ul>
+      <button class="price-btn" onclick="scrollToJoin()">Empezar gratis 14 días</button>
+    </div>
+    <div class="price-card fade-up">
+      <div class="price-name">Anual</div>
+      <div class="price-amount">$10.000</div>
+      <div class="price-period">por mes · $120.000 por año · ahorrás $48.000</div>
+      <ul class="price-features">
+        <li><span class="pf-check">✓</span>Todo lo del plan Pro</li>
+        <li><span class="pf-check">✓</span>Precio fijo por 12 meses</li>
+        <li><span class="pf-check">✓</span>2 meses gratis incluidos</li>
+        <li><span class="pf-check">✓</span>Onboarding personalizado</li>
+        <li><span class="pf-check">✓</span>El precio no cambia por inflación</li>
+      </ul>
+      <button class="price-btn" onclick="scrollToJoin()">Empezar gratis 14 días</button>
+    </div>
+  </div>
+</section>
+
+<!-- UNIRSE -->
+<section id="unirse" style="background:var(--surface);border-top:1px solid var(--bd)">
+  <div class="join-wrap fade-up">
+    <div class="join-text">
+      <h2>¿Sos cocinero/a y querés <em>vender más</em>?</h2>
+      <p>Dejanos tus datos y te contactamos en menos de 24 horas para ayudarte a tener tu página lista.</p>
+    </div>
+    <form class="join-form" onsubmit="handleSubmit(event)">
+      <div class="form-row">
+        <input class="form-input" type="text" placeholder="Tu nombre" required>
+        <input class="form-input" type="text" placeholder="WhatsApp" required>
+      </div>
+      <input class="form-input" type="email" placeholder="Email (opcional)">
+      <select class="form-input">
+        <option value="" disabled selected>¿En qué ciudad cocinás?</option>
+        <option>Buenos Aires (CABA)</option>
+        <option>GBA Norte</option>
+        <option>GBA Sur</option>
+        <option>GBA Oeste</option>
+        <option>Córdoba</option>
+        <option>Rosario</option>
+        <option>Mendoza</option>
+        <option>Otra ciudad</option>
+      </select>
+      <button class="form-submit" type="submit" id="submit-btn">Me interesa, quiero saber más →</button>
+      <p class="form-note">Sin compromiso. Te respondemos por WhatsApp.</p>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">viandita</div>
+    <div class="footer-copy">© 2026 Viandita · Argentina<br>Hecho con amor por cocineros, para cocineros.</div>
+  </div>
+  <div class="footer-links">
+    <a href="#como-funciona">Cómo funciona</a>
+    <a href="#precios">Precios</a>
+    <a href="#unirse">Sumarme</a>
+  </div>
+</footer>
+
+<script>
+// NAV scroll
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('scrolled',window.scrollY>40);
+});
+
+// Fade on scroll
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.12});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+
+// Trigger hero immediately
+setTimeout(()=>document.querySelectorAll('.hero .fade-up').forEach(el=>el.classList.add('visible')),100);
+
+function scrollToJoin(){document.getElementById('unirse').scrollIntoView({behavior:'smooth'});}
+
+function handleSubmit(e){
+  e.preventDefault();
+  const btn=document.getElementById('submit-btn');
+  btn.textContent='¡Listo! Te contactamos pronto 🙌';
+  btn.style.opacity='.7';
+  btn.disabled=true;
+}
+</script>
+</body>
+</html>

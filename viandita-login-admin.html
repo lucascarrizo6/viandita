@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0D0D0D">
+<title>Admin · Viandita</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+button,input{font-family:inherit;font-size:100%;-webkit-appearance:none;appearance:none;border:none;outline:none;background:none}
+:root{
+  --bg:#0D0D0D;--sur:#141414;--c1:#1C1C1C;--c2:#222;
+  --p:#E8643A;--plt:#2A1509;--pdk:#C44D24;
+  --tx:#F0F0F0;--tx2:#909090;--tx3:#505050;
+  --bd:#252525;--bd2:#303030;
+  --re:#D44A4A;--reb:#1F0A0A;
+  --fd:'Fraunces',Georgia,serif;
+  --fb:'DM Sans',system-ui,sans-serif;
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+}
+body{
+  font-family:var(--fb);
+  background:var(--bg);
+  color:var(--tx);
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  -webkit-font-smoothing:antialiased;
+  position:relative;
+  overflow:hidden;
+}
+
+/* BG PATTERN */
+.bg-pattern{
+  position:fixed;inset:0;
+  background-image:radial-gradient(circle,#2A1509 1px,transparent 1px);
+  background-size:28px 28px;
+  opacity:.5;
+  pointer-events:none;
+}
+.bg-glow{
+  position:fixed;
+  width:600px;height:600px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(232,100,58,.06) 0%,transparent 70%);
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+
+/* CARD */
+.card{
+  position:relative;
+  width:100%;
+  max-width:400px;
+  margin:20px;
+  background:var(--sur);
+  border:1px solid var(--bd2);
+  border-radius:22px;
+  padding:36px 32px 32px;
+  animation:fadeUp .4s ease both;
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+
+/* LOGO */
+.logo-wrap{
+  display:flex;align-items:center;gap:12px;margin-bottom:28px;
+}
+.logo-icon{
+  width:42px;height:42px;border-radius:12px;
+  background:var(--p);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--fd);font-size:18px;color:#fff;font-style:italic;
+  flex-shrink:0;
+}
+.logo-text{
+  font-family:var(--fd);font-size:20px;font-weight:600;color:var(--tx);
+}
+.logo-tag{
+  font-family:var(--fb);font-size:10px;font-style:normal;
+  background:var(--plt);color:var(--p);
+  padding:2px 8px;border-radius:20px;font-weight:600;
+  letter-spacing:.5px;margin-left:6px;
+}
+
+/* TITLE */
+.title{
+  font-family:var(--fd);font-size:22px;font-weight:600;
+  margin-bottom:6px;line-height:1.2;
+}
+.subtitle{
+  font-size:13px;color:var(--tx3);margin-bottom:28px;line-height:1.5;
+}
+
+/* FORM */
+.fgroup{margin-bottom:16px;position:relative;}
+.flbl{
+  font-size:11px;font-weight:600;
+  letter-spacing:.6px;text-transform:uppercase;
+  color:var(--tx3);display:block;margin-bottom:7px;
+}
+.fwrap{
+  position:relative;display:flex;align-items:center;
+  background:var(--c1);border:1px solid var(--bd2);
+  border-radius:11px;transition:border-color .2s;
+}
+.fwrap:focus-within{border-color:var(--p);}
+.fwrap.error{border-color:var(--re);}
+.fwrap-ic{
+  width:42px;display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--tx3);flex-shrink:0;
+}
+.finput{
+  flex:1;padding:12px 14px 12px 0;
+  color:var(--tx);font-size:14px;
+  background:none;
+}
+.finput::placeholder{color:var(--tx3);}
+.eye-btn{
+  width:42px;height:100%;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;
+  font-size:14px;color:var(--tx3);
+  transition:color .15s;flex-shrink:0;
+}
+.eye-btn:hover{color:var(--tx2);}
+
+/* EXTRA ROW */
+.extra-row{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;margin-top:-4px;
+}
+.remember{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.cb{
+  width:16px;height:16px;border-radius:4px;
+  border:1.5px solid var(--bd2);background:var(--c1);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,border-color .15s;flex-shrink:0;
+}
+.cb.on{background:var(--p);border-color:var(--p);}
+.cb-check{font-size:10px;color:#fff;display:none;}
+.cb.on .cb-check{display:block;}
+.remember-lbl{font-size:13px;color:var(--tx2);}
+.forgot{font-size:13px;color:var(--p);cursor:pointer;text-decoration:none;}
+.forgot:hover{text-decoration:underline;}
+
+/* BUTTON */
+.btn-login{
+  width:100%;padding:14px;
+  border-radius:12px;background:var(--p);
+  color:#fff;font-family:var(--fb);font-size:15px;font-weight:600;
+  cursor:pointer;border:none;
+  transition:background .15s,transform .1s,opacity .15s;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.btn-login:active{transform:scale(.98);}
+.btn-login:disabled{opacity:.5;cursor:default;}
+.btn-login.loading .btn-txt{display:none;}
+.btn-login .btn-spinner{display:none;}
+.btn-login.loading .btn-spinner{display:block;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{
+  width:18px;height:18px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;
+  animation:spin .7s linear infinite;
+}
+
+/* ERROR MSG */
+.error-msg{
+  display:none;
+  background:var(--reb);border:1px solid rgba(212,74,74,.3);
+  border-radius:10px;padding:10px 14px;
+  font-size:13px;color:var(--re);
+  margin-bottom:16px;
+  animation:shake .3s ease;
+}
+.error-msg.show{display:flex;align-items:center;gap:8px;}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  75%{transform:translateX(6px)}
+}
+
+/* DIVIDER */
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:20px 0;
+}
+.divider-line{flex:1;height:1px;background:var(--bd);}
+.divider-txt{font-size:11px;color:var(--tx3);}
+
+/* FOOTER */
+.card-footer{
+  margin-top:24px;padding-top:20px;
+  border-top:1px solid var(--bd);
+  font-size:12px;color:var(--tx3);text-align:center;line-height:1.6;
+}
+
+/* SUCCESS */
+.success-view{
+  display:none;text-align:center;
+  animation:fadeUp .4s ease both;
+}
+.success-view.show{display:block;}
+.success-ic{
+  width:64px;height:64px;border-radius:50%;
+  background:rgba(76,175,112,.15);border:2px solid rgba(76,175,112,.3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 16px;
+}
+.success-title{font-family:var(--fd);font-size:20px;font-weight:600;margin-bottom:8px;}
+.success-sub{font-size:13px;color:var(--tx3);}
+</style>
+</head>
+<body>
+
+<div class="bg-pattern"></div>
+<div class="bg-glow"></div>
+
+<div class="card" id="login-card">
+
+  <!-- Logo -->
+  <div class="logo-wrap">
+    <div class="logo-icon">v</div>
+    <div>
+      <span class="logo-text">viandita</span>
+      <span class="logo-tag">ADMIN</span>
+    </div>
+  </div>
+
+  <div class="title">Bienvenido de nuevo</div>
+  <div class="subtitle">Ingresá tus credenciales para acceder al panel de administración.</div>
+
+  <!-- Error -->
+  <div class="error-msg" id="error-msg">
+    <span>⚠</span>
+    <span id="error-txt">Usuario o contraseña incorrectos.</span>
+  </div>
+
+  <!-- Form -->
+  <div class="fgroup">
+    <label class="flbl">Usuario</label>
+    <div class="fwrap" id="wrap-user">
+      <div class="fwrap-ic">👤</div>
+      <input class="finput" id="inp-user" type="text" placeholder="tu usuario" autocomplete="username" autocapitalize="none">
+    </div>
+  </div>
+
+  <div class="fgroup">
+    <label class="flbl">Contraseña</label>
+    <div class="fwrap" id="wrap-pass">
+      <div class="fwrap-ic">🔒</div>
+      <input class="finput" id="inp-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+      <div class="eye-btn" id="eye-btn" onclick="toggleEye()">👁</div>
+    </div>
+  </div>
+
+  <div class="extra-row">
+    <div class="remember" onclick="toggleCb()">
+      <div class="cb" id="cb"><span class="cb-check">✓</span></div>
+      <span class="remember-lbl">Recordarme</span>
+    </div>
+    <a class="forgot" href="#" onclick="forgotPwd(event)">¿Olvidaste la contraseña?</a>
+  </div>
+
+  <button class="btn-login" id="btn-login" onclick="doLogin()">
+    <span class="btn-txt">Ingresar al panel</span>
+    <div class="btn-spinner"><div class="spinner"></div></div>
+  </button>
+
+  <div class="card-footer">
+    Acceso restringido solo para administradores.<br>
+    ¿Problemas para ingresar? Contactá al equipo.
+  </div>
+
+</div>
+
+<!-- SUCCESS -->
+<div class="card" id="success-card" style="display:none">
+  <div class="success-view show">
+    <div class="success-ic">✓</div>
+    <div class="success-title">¡Bienvenido, Lucas!</div>
+    <div class="success-sub">Redirigiendo al panel de administración…</div>
+    <div style="margin-top:20px">
+      <div style="height:3px;background:var(--bd);border-radius:3px;overflow:hidden">
+        <div id="redirect-bar" style="height:100%;width:0;background:var(--p);border-radius:3px;transition:width 2s linear"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Credenciales (en producción esto va en Supabase Auth)
+const CREDS={ user:'admin', pass:'viandita2026' };
+
+let eyeOpen=false;
+let cbOn=false;
+
+function toggleEye(){
+  eyeOpen=!eyeOpen;
+  document.getElementById('inp-pass').type=eyeOpen?'text':'password';
+  document.getElementById('eye-btn').textContent=eyeOpen?'🙈':'👁';
+}
+
+function toggleCb(){
+  cbOn=!cbOn;
+  document.getElementById('cb').classList.toggle('on',cbOn);
+}
+
+function showError(msg){
+  const el=document.getElementById('error-msg');
+  document.getElementById('error-txt').textContent=msg;
+  el.classList.remove('show');
+  void el.offsetWidth; // reflow para re-disparar animation
+  el.classList.add('show');
+  document.getElementById('wrap-user').classList.add('error');
+  document.getElementById('wrap-pass').classList.add('error');
+}
+
+function clearError(){
+  document.getElementById('error-msg').classList.remove('show');
+  document.getElementById('wrap-user').classList.remove('error');
+  document.getElementById('wrap-pass').classList.remove('error');
+}
+
+function doLogin(){
+  clearError();
+  const user=document.getElementById('inp-user').value.trim();
+  const pass=document.getElementById('inp-pass').value;
+  const btn=document.getElementById('btn-login');
+
+  if(!user||!pass){
+    showError('Completá usuario y contraseña.');
+    return;
+  }
+
+  // Loading state
+  btn.classList.add('loading');
+  btn.disabled=true;
+
+  setTimeout(()=>{
+    if(user===CREDS.user && pass===CREDS.pass){
+      // Éxito
+      document.getElementById('login-card').style.display='none';
+      document.getElementById('success-card').style.display='block';
+      setTimeout(()=>{
+        document.getElementById('redirect-bar').style.width='100%';
+      },50);
+      setTimeout(()=>{
+        // Acá iría: window.location.href = '/admin/dashboard'
+        alert('En producción esto redirige a viandita-admin.html');
+        document.getElementById('login-card').style.display='block';
+        document.getElementById('success-card').style.display='none';
+        btn.classList.remove('loading');
+        btn.disabled=false;
+      },2200);
+    } else {
+      btn.classList.remove('loading');
+      btn.disabled=false;
+      showError('Usuario o contraseña incorrectos.');
+    }
+  },1200);
+}
+
+function forgotPwd(e){
+  e.preventDefault();
+  alert('En producción esto envía un link de recuperación al email del admin.');
+}
+
+// Enter para loguear
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter') doLogin();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0D0D0D">
+<title>Admin · Viandita</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+button,input,textarea,select{font-family:inherit;font-size:100%;-webkit-appearance:none;appearance:none;border:none;outline:none;background:none}
+:root{
+  --bg:#0D0D0D; --sur:#161616; --c1:#1E1E1E; --c2:#252525;
+  --p:#E8643A;  --plt:#2A1509; --pdk:#C44D24;
+  --tx:#F0F0F0; --tx2:#A0A0A0; --tx3:#606060;
+  --bd:#2A2A2A; --bd2:#333;
+  --gr:#4CAF70; --grb:#0D2416;
+  --am:#D4943A; --amb:#251A08;
+  --re:#D44A4A; --reb:#250D0D;
+  --blue:#4A90D4; --blueb:#0D1A25;
+  --fd:'Fraunces',Georgia,serif;
+  --fb:'DM Sans',system-ui,sans-serif;
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+  --sidebar:220px;
+  --xs:11px; --sm:13px; --bs:15px; --lg:18px; --xl:24px; --2xl:32px;
+}
+
+body{
+  font-family:var(--fb);
+  background:var(--bg);
+  color:var(--tx);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  display:flex;
+}
+
+/* ─── SIDEBAR ──────────────────────────────────────────────── */
+.sidebar{
+  width:var(--sidebar);
+  min-height:100dvh;
+  background:var(--sur);
+  border-right:1px solid var(--bd);
+  display:flex;
+  flex-direction:column;
+  flex-shrink:0;
+  position:sticky;
+  top:0;
+}
+.sb-logo{
+  padding:24px 20px 20px;
+  border-bottom:1px solid var(--bd);
+  font-family:var(--fd);
+  font-size:18px;
+  color:var(--p);
+  font-style:italic;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.sb-logo-tag{
+  font-family:var(--fb);
+  font-size:10px;
+  font-style:normal;
+  background:var(--plt);
+  color:var(--p);
+  padding:2px 8px;
+  border-radius:20px;
+  font-weight:600;
+  letter-spacing:.5px;
+}
+.sb-nav{ padding:12px 0; flex:1; }
+.sb-item{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 20px; cursor:pointer;
+  font-size:var(--sm); color:var(--tx2);
+  transition:background .15s,color .15s;
+  border-left:3px solid transparent;
+}
+.sb-item:hover{ background:var(--c1); color:var(--tx); }
+.sb-item.on{ background:var(--c1); color:var(--p); border-left-color:var(--p); }
+.sb-item-ic{ font-size:16px; width:20px; text-align:center; flex-shrink:0; }
+.sb-section{ font-size:10px; font-weight:600; letter-spacing:1.2px; text-transform:uppercase; color:var(--tx3); padding:12px 20px 6px; }
+.sb-footer{
+  padding:16px 20px;
+  border-top:1px solid var(--bd);
+  display:flex; align-items:center; gap:10px;
+}
+.sb-footer-av{
+  width:30px; height:30px; border-radius:50%;
+  background:var(--p); color:#fff;
+  font-family:var(--fd); font-size:12px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.sb-footer-nm{ font-size:var(--xs); color:var(--tx2); }
+.sb-footer-role{ font-size:10px; color:var(--tx3); margin-top:1px; }
+
+/* ─── MAIN ─────────────────────────────────────────────────── */
+.main{ flex:1; min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  padding:20px 28px;
+  border-bottom:1px solid var(--bd);
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--sur); position:sticky; top:0; z-index:100;
+}
+.topbar-title{ font-family:var(--fd); font-size:var(--lg); font-weight:600; }
+.topbar-sub{ font-size:var(--xs); color:var(--tx3); margin-top:2px; }
+.topbar-actions{ display:flex; align-items:center; gap:10px; }
+.btn-sm{
+  padding:8px 16px; border-radius:8px; font-size:var(--xs);
+  font-weight:600; cursor:pointer; border:none; transition:background .15s;
+}
+.btn-sm-ghost{ border:1px solid var(--bd2); color:var(--tx2); }
+.btn-sm-ghost:hover{ border-color:var(--p); color:var(--p); }
+.btn-sm-primary{ background:var(--p); color:#fff; }
+.btn-sm-primary:hover{ background:var(--pdk); }
+
+.content{ padding:24px 28px; flex:1; overflow-y:auto; }
+
+/* ─── SCREENS ──────────────────────────────────────────────── */
+.screen{ display:none; }
+.screen.on{ display:block; }
+
+/* ─── STAT CARDS ───────────────────────────────────────────── */
+.stats-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; }
+.stat-box{
+  background:var(--c1); border:1px solid var(--bd);
+  border-radius:14px; padding:18px 20px;
+}
+.stat-box-lbl{ font-size:var(--xs); color:var(--tx3); margin-bottom:8px; text-transform:uppercase; letter-spacing:.8px; font-weight:600; }
+.stat-box-val{ font-family:var(--fd); font-size:var(--2xl); font-weight:600; line-height:1; }
+.stat-box-sub{ font-size:var(--xs); color:var(--tx3); margin-top:6px; }
+.stat-box.hl{ background:var(--p); border-color:var(--pdk); }
+.stat-box.hl .stat-box-lbl{ color:rgba(255,255,255,.65); }
+.stat-box.hl .stat-box-sub{ color:rgba(255,255,255,.65); }
+
+/* ─── TABLE ────────────────────────────────────────────────── */
+.table-wrap{
+  background:var(--c1); border:1px solid var(--bd);
+  border-radius:14px; overflow:hidden; margin-bottom:20px;
+}
+.table-hdr{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 20px; border-bottom:1px solid var(--bd);
+}
+.table-hdr-title{ font-size:var(--sm); font-weight:600; }
+.table-hdr-sub{ font-size:var(--xs); color:var(--tx3); margin-top:2px; }
+.search-box{
+  display:flex; align-items:center; gap:8px;
+  background:var(--c2); border:1px solid var(--bd2);
+  border-radius:8px; padding:7px 12px;
+}
+.search-box input{ font-size:var(--xs); color:var(--tx); width:160px; }
+.search-box input::placeholder{ color:var(--tx3); }
+table{ width:100%; border-collapse:collapse; }
+thead tr{ border-bottom:1px solid var(--bd); }
+th{
+  text-align:left; font-size:var(--xs); font-weight:600;
+  color:var(--tx3); text-transform:uppercase; letter-spacing:.8px;
+  padding:10px 20px;
+}
+td{ padding:13px 20px; font-size:var(--sm); border-bottom:1px solid var(--bd); vertical-align:middle; }
+tr:last-child td{ border-bottom:none; }
+tr:hover td{ background:var(--c2); }
+.tag{
+  display:inline-block; font-size:10px; font-weight:600;
+  padding:3px 9px; border-radius:20px;
+}
+.tag-active{ background:var(--grb); color:var(--gr); }
+.tag-paused{ background:var(--amb); color:var(--am); }
+.tag-trial{ background:var(--blueb); color:var(--blue); }
+.tag-basic{ background:var(--c2); color:var(--tx2); }
+.tag-pro{ background:var(--plt); color:var(--p); }
+.avatar-cell{
+  width:34px; height:34px; border-radius:50%;
+  background:var(--p); color:#fff;
+  font-family:var(--fd); font-size:13px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.td-nm{ font-weight:500; }
+.td-sub{ font-size:var(--xs); color:var(--tx3); margin-top:1px; }
+.action-btn{
+  padding:5px 12px; border-radius:7px; font-size:var(--xs);
+  font-weight:600; cursor:pointer; border:1px solid var(--bd2);
+  color:var(--tx2); transition:all .15s;
+}
+.action-btn:hover{ border-color:var(--p); color:var(--p); }
+.action-btn.danger:hover{ border-color:var(--re); color:var(--re); }
+
+/* ─── COCINERO DETAIL ──────────────────────────────────────── */
+.detail-grid{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.detail-card{
+  background:var(--c1); border:1px solid var(--bd);
+  border-radius:14px; padding:20px;
+}
+.detail-card-title{ font-size:var(--xs); font-weight:600; text-transform:uppercase; letter-spacing:.8px; color:var(--tx3); margin-bottom:14px; }
+.kv-row{ display:flex; justify-content:space-between; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--bd); font-size:var(--sm); }
+.kv-row:last-child{ border-bottom:none; }
+.kv-key{ color:var(--tx3); }
+.kv-val{ color:var(--tx); font-weight:500; text-align:right; }
+
+/* ─── SWITCH ───────────────────────────────────────────────── */
+.sw{
+  width:38px; height:20px; border-radius:10px;
+  background:var(--bd2); position:relative; cursor:pointer;
+  transition:background .2s; flex-shrink:0; display:inline-block;
+}
+.sw.on{ background:var(--gr); }
+.sw::after{
+  content:''; position:absolute; top:2px; left:2px;
+  width:16px; height:16px; border-radius:50%;
+  background:#fff; transition:transform .2s;
+}
+.sw.on::after{ transform:translateX(18px); }
+
+/* ─── PAGOS ────────────────────────────────────────────────── */
+.pago-row-ok td{ }
+.pago-row-vence td{ color:var(--am); }
+.pago-row-vencido td{ color:var(--re); opacity:.8; }
+
+/* ─── MODAL ────────────────────────────────────────────────── */
+.modal-bg{
+  position:fixed; inset:0; background:rgba(0,0,0,.7);
+  z-index:999; display:none; align-items:center; justify-content:center;
+  -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+}
+.modal-bg.open{ display:flex; }
+.modal{
+  background:var(--sur); border:1px solid var(--bd2);
+  border-radius:18px; padding:28px; width:460px; max-width:90vw;
+}
+.modal-title{ font-family:var(--fd); font-size:var(--lg); font-weight:600; margin-bottom:20px; }
+.fgroup{ margin-bottom:14px; }
+.flbl{ font-size:var(--xs); color:var(--tx3); margin-bottom:5px; display:block; text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
+.fctrl{
+  width:100%; background:var(--c1); border:1px solid var(--bd2);
+  border-radius:9px; padding:10px 13px; color:var(--tx); font-size:var(--sm);
+  transition:border-color .15s;
+}
+.fctrl:focus{ border-color:var(--p); }
+.fctrl::placeholder{ color:var(--tx3); }
+select.fctrl option{ background:var(--sur); }
+.modal-footer{ display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<aside class="sidebar">
+  <div class="sb-logo">viandita <span class="sb-logo-tag">ADMIN</span></div>
+  <nav class="sb-nav">
+    <div class="sb-section">General</div>
+    <div class="sb-item on" id="si-overview" onclick="go('overview')">
+      <span class="sb-item-ic">⊞</span> Resumen
+    </div>
+    <div class="sb-item" id="si-cocineros" onclick="go('cocineros')">
+      <span class="sb-item-ic">👨‍🍳</span> Cocineros
+    </div>
+    <div class="sb-item" id="si-pagos" onclick="go('pagos')">
+      <span class="sb-item-ic">💳</span> Pagos
+    </div>
+    <div class="sb-section">Sistema</div>
+    <div class="sb-item" id="si-solicitudes" onclick="go('solicitudes')">
+      <span class="sb-item-ic">📥</span> Solicitudes
+      <span style="margin-left:auto;background:var(--p);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px">3</span>
+    </div>
+    <div class="sb-item" id="si-config" onclick="go('config')">
+      <span class="sb-item-ic">⚙️</span> Configuración
+    </div>
+  </nav>
+  <div class="sb-footer">
+    <div class="sb-footer-av">L</div>
+    <div>
+      <div class="sb-footer-nm">Lucas</div>
+      <div class="sb-footer-role">Super admin</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════ MAIN ═══════ -->
+<div class="main">
+
+  <!-- ── OVERVIEW ── -->
+  <div class="screen on" id="s-overview">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Resumen general</div>
+        <div class="topbar-sub">Abril 2026</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="stats-row">
+        <div class="stat-box hl">
+          <div class="stat-box-lbl">Cocineros activos</div>
+          <div class="stat-box-val">12</div>
+          <div class="stat-box-sub">+2 este mes</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-lbl">Facturación mensual</div>
+          <div class="stat-box-val">$168k</div>
+          <div class="stat-box-sub">suscripciones</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-lbl">Solicitudes pendientes</div>
+          <div class="stat-box-val">3</div>
+          <div class="stat-box-sub">por revisar</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-lbl">Pagos vencidos</div>
+          <div class="stat-box-val" style="color:var(--re)">2</div>
+          <div class="stat-box-sub">requieren atención</div>
+        </div>
+      </div>
+
+      <!-- Tabla rápida cocineros -->
+      <div class="table-wrap">
+        <div class="table-hdr">
+          <div>
+            <div class="table-hdr-title">Cocineros activos</div>
+            <div class="table-hdr-sub">Estado al día de hoy</div>
+          </div>
+          <button class="btn-sm btn-sm-primary" onclick="go('cocineros')">Ver todos</button>
+        </div>
+        <table>
+          <thead><tr>
+            <th>Cocinero</th><th>Plan</th><th>Menú</th><th>Estado</th><th></th>
+          </tr></thead>
+          <tbody id="ov-table"></tbody>
+        </table>
+      </div>
+
+      <!-- Solicitudes pendientes -->
+      <div class="table-wrap">
+        <div class="table-hdr">
+          <div>
+            <div class="table-hdr-title">Solicitudes pendientes</div>
+            <div class="table-hdr-sub">Cocineros que quieren sumarse</div>
+          </div>
+          <button class="btn-sm btn-sm-ghost" onclick="go('solicitudes')">Ver todas</button>
+        </div>
+        <table>
+          <thead><tr><th>Nombre</th><th>Ciudad</th><th>WhatsApp</th><th>Fecha</th><th></th></tr></thead>
+          <tbody id="ov-solic"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COCINEROS ── -->
+  <div class="screen" id="s-cocineros">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Cocineros</div>
+        <div class="topbar-sub">Todos los cocineros registrados</div>
+      </div>
+      <div class="topbar-actions">
+        <div class="search-box">
+          <span style="color:var(--tx3);font-size:14px">🔍</span>
+          <input placeholder="Buscar cocinero..." oninput="filterCocineros(this.value)">
+        </div>
+        <button class="btn-sm btn-sm-primary" onclick="openModal()">+ Agregar cocinero</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Cocinero</th><th>Zona</th><th>Plan</th><th>Menú esta semana</th><th>Pago</th><th>Estado</th><th></th>
+          </tr></thead>
+          <tbody id="cook-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PAGOS ── -->
+  <div class="screen" id="s-pagos">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Pagos</div>
+        <div class="topbar-sub">Estado de suscripciones</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box">
+          <div class="stat-box-lbl">Al día</div>
+          <div class="stat-box-val" style="color:var(--gr)">10</div>
+          <div class="stat-box-sub">cocineros</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-lbl">Vence esta semana</div>
+          <div class="stat-box-val" style="color:var(--am)">2</div>
+          <div class="stat-box-sub">recordar cobro</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-lbl">Vencido</div>
+          <div class="stat-box-val" style="color:var(--re)">2</div>
+          <div class="stat-box-sub">pausar acceso</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Cocinero</th><th>Plan</th><th>Monto</th><th>Último pago</th><th>Próximo vencimiento</th><th>Estado</th><th></th>
+          </tr></thead>
+          <tbody id="pagos-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SOLICITUDES ── -->
+  <div class="screen" id="s-solicitudes">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title">Solicitudes</div>
+        <div class="topbar-sub">Cocineros que quieren sumarse a Viandita</div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Nombre</th><th>Ciudad</th><th>WhatsApp</th><th>Email</th><th>Fecha</th><th></th>
+          </tr></thead>
+          <tbody id="solic-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CONFIG ── -->
+  <div class="screen" id="s-config">
+    <div class="topbar">
+      <div><div class="topbar-title">Configuración</div></div>
+    </div>
+    <div class="content">
+      <div class="detail-grid" style="grid-template-columns:1fr">
+        <div class="detail-card" style="max-width:520px">
+          <div class="detail-card-title">Precios de suscripción</div>
+          <div class="fgroup"><label class="flbl">Plan Básico ($/mes)</label><input class="fctrl" type="number" value="8000"></div>
+          <div class="fgroup"><label class="flbl">Plan Pro ($/mes)</label><input class="fctrl" type="number" value="14000"></div>
+          <div class="fgroup"><label class="flbl">Plan Anual ($/mes equivalente)</label><input class="fctrl" type="number" value="10000"></div>
+          <div class="fgroup"><label class="flbl">Días de prueba gratis</label><input class="fctrl" type="number" value="14"></div>
+          <div style="display:flex;gap:10px;margin-top:4px">
+            <button class="btn-sm btn-sm-primary" onclick="this.textContent='✓ Guardado';setTimeout(()=>this.textContent='Guardar cambios',2000)">Guardar cambios</button>
+          </div>
+        </div>
+        <div class="detail-card" style="max-width:520px;margin-top:16px">
+          <div class="detail-card-title">Configuración general</div>
+          <div class="kv-row">
+            <span class="kv-key">Cierre de menú semanal</span>
+            <span class="kv-val">Domingo 23:59</span>
+          </div>
+          <div class="kv-row" style="padding:12px 0">
+            <div>
+              <div style="font-size:var(--sm);color:var(--tx)">Registros abiertos</div>
+              <div style="font-size:var(--xs);color:var(--tx3);margin-top:2px">Nuevos cocineros pueden solicitar sumarse</div>
+            </div>
+            <div class="sw on" onclick="this.classList.toggle('on')"></div>
+          </div>
+          <div class="kv-row" style="padding:12px 0;border-bottom:none">
+            <div>
+              <div style="font-size:var(--sm);color:var(--tx)">Modo mantenimiento</div>
+              <div style="font-size:var(--xs);color:var(--tx3);margin-top:2px">Muestra página de "volvemos pronto"</div>
+            </div>
+            <div class="sw" onclick="this.classList.toggle('on')"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ── MODAL NUEVO COCINERO ── -->
+<div class="modal-bg" id="modal-bg" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-title">Agregar cocinero</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="fgroup"><label class="flbl">Nombre</label><input class="fctrl" placeholder="María Laura"></div>
+      <div class="fgroup"><label class="flbl">Slug (URL)</label><input class="fctrl" placeholder="marialauara"></div>
+      <div class="fgroup"><label class="flbl">WhatsApp</label><input class="fctrl" type="tel" placeholder="+54 9 11..."></div>
+      <div class="fgroup"><label class="flbl">Zona</label><input class="fctrl" placeholder="Palermo · CABA"></div>
+    </div>
+    <div class="fgroup"><label class="flbl">Especialidad</label><input class="fctrl" placeholder="Cocina casera tradicional"></div>
+    <div class="fgroup">
+      <label class="flbl">Plan</label>
+      <select class="fctrl">
+        <option>Trial 14 días</option>
+        <option>Básico</option>
+        <option>Pro</option>
+        <option>Anual</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-sm btn-sm-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-sm btn-sm-primary" onclick="addCocinero()">Crear cocinero</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATOS ──────────────────────────────────────────────────────
+let COCINEROS=[
+  {id:1,nm:'María Laura',init:'ML',slug:'marialauara',zona:'Palermo · CABA',  plan:'Pro',    menuOk:true, pago:'al-dia', prox:'01/05',activo:true},
+  {id:2,nm:'Facundo Fit', init:'FF',slug:'facundofit', zona:'Belgrano · CABA', plan:'Pro',    menuOk:true, pago:'al-dia', prox:'05/05',activo:true},
+  {id:3,nm:'Carla R.',    init:'CR',slug:'clarlaR',    zona:'Palermo · CABA',  plan:'Básico', menuOk:false,pago:'vence',  prox:'22/04',activo:true},
+  {id:4,nm:'Diego M.',    init:'DM',slug:'diegom',     zona:'Flores · CABA',   plan:'Anual',  menuOk:true, pago:'al-dia', prox:'01/12',activo:true},
+  {id:5,nm:'Sole V.',     init:'SV',slug:'solev',      zona:'San Telmo · CABA',plan:'Trial',  menuOk:false,pago:'trial',  prox:'25/04',activo:true},
+  {id:6,nm:'Marta L.',    init:'ML',slug:'martal',     zona:'Caballito · CABA',plan:'Básico', menuOk:true, pago:'vencido',prox:'10/04',activo:false},
+  {id:7,nm:'Pablo S.',    init:'PS',slug:'pablos',     zona:'Villa Urquiza',   plan:'Pro',    menuOk:true, pago:'al-dia', prox:'03/05',activo:true},
+  {id:8,nm:'Lucía F.',    init:'LF',slug:'luciaf',     zona:'Núñez · CABA',    plan:'Pro',    menuOk:true, pago:'al-dia', prox:'07/05',activo:true},
+  {id:9,nm:'Tomás R.',    init:'TR',slug:'tomasr',     zona:'Almagro · CABA',  plan:'Trial',  menuOk:false,pago:'trial',  prox:'28/04',activo:true},
+  {id:10,nm:'Ana P.',     init:'AP',slug:'anap',       zona:'Boedo · CABA',    plan:'Básico', menuOk:true, pago:'vencido',prox:'08/04',activo:false},
+];
+
+const SOLICITUDES=[
+  {nm:'Romina García', ciudad:'Rosario',       wa:'+54 9 341 555 0001', email:'romi@gmail.com',   fecha:'20/04'},
+  {nm:'Esteban López', ciudad:'Buenos Aires',  wa:'+54 9 11 555 0002',  email:'este@hotmail.com', fecha:'19/04'},
+  {nm:'Natalia Ruiz',  ciudad:'Córdoba',       wa:'+54 9 351 555 0003', email:'nati@gmail.com',   fecha:'18/04'},
+  {nm:'Jorge Pérez',   ciudad:'Mendoza',       wa:'+54 9 261 555 0004', email:'jorge@yahoo.com',  fecha:'15/04'},
+  {nm:'Valentina M.',  ciudad:'Buenos Aires',  wa:'+54 9 11 555 0005',  email:'valen@gmail.com',  fecha:'14/04'},
+];
+
+const PAGOS=[
+  {nm:'María Laura',init:'ML',plan:'Pro',     monto:'$14.000',ultimo:'01/04',prox:'01/05',estado:'al-dia'},
+  {nm:'Facundo Fit', init:'FF',plan:'Pro',     monto:'$14.000',ultimo:'05/04',prox:'05/05',estado:'al-dia'},
+  {nm:'Diego M.',    init:'DM',plan:'Anual',   monto:'$120.000',ultimo:'01/12',prox:'01/12/27',estado:'al-dia'},
+  {nm:'Pablo S.',    init:'PS',plan:'Pro',     monto:'$14.000',ultimo:'03/04',prox:'03/05',estado:'al-dia'},
+  {nm:'Lucía F.',    init:'LF',plan:'Pro',     monto:'$14.000',ultimo:'07/04',prox:'07/05',estado:'al-dia'},
+  {nm:'Carla R.',    init:'CR',plan:'Básico',  monto:'$8.000', ultimo:'22/03',prox:'22/04',estado:'vence'},
+  {nm:'Sole V.',     init:'SV',plan:'Trial',   monto:'—',      ultimo:'—',    prox:'25/04',estado:'trial'},
+  {nm:'Tomás R.',    init:'TR',plan:'Trial',   monto:'—',      ultimo:'—',    prox:'28/04',estado:'trial'},
+  {nm:'Marta L.',    init:'ML',plan:'Básico',  monto:'$8.000', ultimo:'10/03',prox:'10/04',estado:'vencido'},
+  {nm:'Ana P.',      init:'AP',plan:'Básico',  monto:'$8.000', ultimo:'08/03',prox:'08/04',estado:'vencido'},
+];
+
+// ── NAV ────────────────────────────────────────────────────────
+function go(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('on'));
+  document.getElementById('s-'+name).classList.add('on');
+  document.getElementById('si-'+name).classList.add('on');
+  renders[name]&&renders[name]();
+}
+
+const renders={
+  overview:renderOverview,
+  cocineros:()=>renderCocineros(COCINEROS),
+  pagos:renderPagos,
+  solicitudes:renderSolicitudes,
+};
+
+// ── OVERVIEW ───────────────────────────────────────────────────
+function renderOverview(){
+  // Mini tabla cocineros
+  document.getElementById('ov-table').innerHTML=
+    COCINEROS.slice(0,5).map(c=>`
+      <tr>
+        <td><div style="display:flex;align-items:center;gap:10px">
+          <div class="avatar-cell" style="font-size:11px">${c.init}</div>
+          <div><div class="td-nm">${c.nm}</div><div class="td-sub">viandita.com.ar/${c.slug}</div></div>
+        </div></td>
+        <td><span class="tag tag-${c.plan==='Pro'?'pro':'basic'}">${c.plan}</span></td>
+        <td>${c.menuOk
+          ?'<span style="color:var(--gr);font-size:12px">✓ Cargado</span>'
+          :'<span style="color:var(--re);font-size:12px">✗ Sin cargar</span>'}</td>
+        <td><span class="tag tag-${c.activo?'active':'paused'}">${c.activo?'Activo':'Pausado'}</span></td>
+        <td><button class="action-btn" onclick="go('cocineros')">Ver</button></td>
+      </tr>`).join('');
+
+  // Mini tabla solicitudes
+  document.getElementById('ov-solic').innerHTML=
+    SOLICITUDES.slice(0,3).map(s=>`
+      <tr>
+        <td class="td-nm">${s.nm}</td>
+        <td style="color:var(--tx2)">${s.ciudad}</td>
+        <td style="color:var(--tx2)">${s.wa}</td>
+        <td style="color:var(--tx3)">${s.fecha}</td>
+        <td><div style="display:flex;gap:6px">
+          <button class="action-btn" style="color:var(--gr);border-color:rgba(76,175,112,.3)" onclick="aprobarSolic(this)">Aprobar</button>
+          <button class="action-btn danger" onclick="this.closest('tr').remove()">Rechazar</button>
+        </div></td>
+      </tr>`).join('');
+}
+
+// ── COCINEROS ──────────────────────────────────────────────────
+function renderCocineros(list){
+  document.getElementById('cook-table').innerHTML=list.map((c,i)=>`
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div class="avatar-cell" style="font-size:11px">${c.init}</div>
+        <div>
+          <div class="td-nm">${c.nm}</div>
+          <div class="td-sub">/${c.slug}</div>
+        </div>
+      </div></td>
+      <td style="color:var(--tx2);font-size:var(--xs)">${c.zona}</td>
+      <td><span class="tag tag-${planTag(c.plan)}">${c.plan}</span></td>
+      <td>${c.menuOk
+        ?'<span style="color:var(--gr);font-size:12px">✓ Cargado</span>'
+        :'<span style="color:var(--re);font-size:12px">✗ Sin cargar</span>'}</td>
+      <td><span style="font-size:var(--xs);color:${c.pago==='vencido'?'var(--re)':c.pago==='vence'?'var(--am)':'var(--gr)'}">
+        ${c.pago==='al-dia'?'✓ Al día':c.pago==='vence'?'⚠ Vence '+c.prox:'✗ Vencido'}
+      </span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="sw ${c.activo?'on':''}" onclick="toggleActivo(${i})"></div>
+          <span style="font-size:var(--xs);color:var(--tx3)">${c.activo?'Activo':'Pausado'}</span>
+        </div>
+      </td>
+      <td><div style="display:flex;gap:6px">
+        <button class="action-btn" onclick="verLink('${c.slug}')">Ver web</button>
+        <button class="action-btn danger" onclick="eliminar(${i})">Eliminar</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+function planTag(p){
+  if(p==='Pro'||p==='Anual') return 'pro';
+  if(p==='Trial') return 'trial';
+  return 'basic';
+}
+
+function filterCocineros(q){
+  const r=COCINEROS.filter(c=>c.nm.toLowerCase().includes(q.toLowerCase())||c.zona.toLowerCase().includes(q.toLowerCase()));
+  renderCocineros(r);
+}
+
+function toggleActivo(i){
+  COCINEROS[i].activo=!COCINEROS[i].activo;
+  renderCocineros(COCINEROS);
+}
+
+function verLink(slug){
+  alert(`viandita.com.ar/${slug}\n\n(Cuando esté online abrirá la página del cocinero)`);
+}
+
+function eliminar(i){
+  if(confirm(`¿Eliminar a ${COCINEROS[i].nm}? Esta acción no se puede deshacer.`)){
+    COCINEROS.splice(i,1);
+    renderCocineros(COCINEROS);
+  }
+}
+
+// ── PAGOS ──────────────────────────────────────────────────────
+function renderPagos(){
+  document.getElementById('pagos-table').innerHTML=PAGOS.map(p=>{
+    const cls=p.estado==='vencido'?'pago-row-vencido':p.estado==='vence'?'pago-row-vence':'';
+    const estadoHtml=
+      p.estado==='al-dia' ?'<span class="tag tag-active">Al día</span>':
+      p.estado==='vence'  ?`<span class="tag tag-paused">Vence ${p.prox}</span>`:
+      p.estado==='trial'  ?'<span class="tag tag-trial">Trial</span>':
+                           '<span class="tag" style="background:var(--reb);color:var(--re)">Vencido</span>';
+    return`<tr class="${cls}">
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div class="avatar-cell" style="font-size:11px;flex-shrink:0">${p.init}</div>
+        <span class="td-nm">${p.nm}</span>
+      </div></td>
+      <td><span class="tag tag-${planTag(p.plan)}">${p.plan}</span></td>
+      <td style="font-weight:600">${p.monto}</td>
+      <td style="color:var(--tx2)">${p.ultimo}</td>
+      <td>${p.prox}</td>
+      <td>${estadoHtml}</td>
+      <td>${p.estado==='vencido'||p.estado==='vence'
+        ?`<button class="action-btn" style="color:var(--p);border-color:rgba(232,100,58,.3)">Avisar</button>`
+        :'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── SOLICITUDES ────────────────────────────────────────────────
+function renderSolicitudes(){
+  document.getElementById('solic-table').innerHTML=SOLICITUDES.map((s,i)=>`
+    <tr id="srow-${i}">
+      <td class="td-nm">${s.nm}</td>
+      <td style="color:var(--tx2)">${s.ciudad}</td>
+      <td><a href="https://wa.me/${s.wa.replace(/\D/g,'')}" style="color:var(--gr);font-size:var(--xs)">${s.wa}</a></td>
+      <td style="color:var(--tx2);font-size:var(--xs)">${s.email}</td>
+      <td style="color:var(--tx3)">${s.fecha}</td>
+      <td><div style="display:flex;gap:6px">
+        <button class="action-btn" style="color:var(--gr);border-color:rgba(76,175,112,.3)" onclick="aprobarSolicIdx(${i})">Aprobar</button>
+        <button class="action-btn danger" onclick="document.getElementById('srow-${i}').remove()">Rechazar</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+function aprobarSolicIdx(i){
+  const s=SOLICITUDES[i];
+  COCINEROS.push({
+    id:Date.now(), nm:s.nm, init:s.nm.split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase(),
+    slug:s.nm.toLowerCase().replace(/\s/g,''), zona:s.ciudad,
+    plan:'Trial', menuOk:false, pago:'trial', prox:'—', activo:true,
+  });
+  document.getElementById(`srow-${i}`).remove();
+  alert(`✓ ${s.nm} fue aprobado/a y aparece ahora en Cocineros como Trial.`);
+}
+
+function aprobarSolic(btn){ btn.closest('tr').remove(); }
+
+// ── MODAL ──────────────────────────────────────────────────────
+function openModal(){ document.getElementById('modal-bg').classList.add('open'); }
+function closeModal(e){
+  if(!e||e.target===document.getElementById('modal-bg'))
+    document.getElementById('modal-bg').classList.remove('open');
+}
+function addCocinero(){
+  document.getElementById('modal-bg').classList.remove('open');
+  alert('Cocinero creado. En producción esto se guarda en Supabase y genera su página automáticamente.');
+}
+
+// ── INIT ───────────────────────────────────────────────────────
+renderOverview();
+</script>
+</body>
+</html>

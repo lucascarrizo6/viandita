@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1A0F08">
+<title>Dashboard · Viandita</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+html{-webkit-text-size-adjust:100%}
+button,input,textarea,select{font-family:inherit;font-size:100%;-webkit-appearance:none;appearance:none;border:none;outline:none;background:none}
+
+:root{
+  --bg:#1A0F08; --sur:#241509; --c1:#2E1C0E; --c2:#382113;
+  --p:#E8643A;  --plt:#3D1E0D; --pdk:#C44D24;
+  --tx:#F5EDE4; --tx2:#C4A48A; --tx3:#8A6850;
+  --bd:#3D2515; --bd2:#4D3020;
+  --gr:#5DA64A; --grb:#1A2E14;
+  --am:#D4943A; --amb:#2E1E08;
+  --re:#D44A4A; --reb:#2E1010;
+  --fd:'Fraunces',Georgia,serif;
+  --fb:'DM Sans',system-ui,sans-serif;
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+  --t:48px;
+  --xs:clamp(11px,3vw,13px); --sm:clamp(12px,3.5vw,14px);
+  --bs:clamp(14px,4vw,16px);  --lg:clamp(17px,4.5vw,20px);
+  --xl:clamp(22px,5.5vw,28px);
+  --pad:20px;
+}
+
+body{
+  font-family:var(--fb);
+  background:var(--bg);
+  color:var(--tx);
+  max-width:480px;
+  margin:0 auto;
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ─── SCREENS ─────────────────────────────────────────────── */
+.screen{
+  display:none;
+  flex-direction:column;
+  min-height:100dvh;
+  padding-bottom:calc(64px + var(--sab));
+}
+.screen.on{ display:flex; }
+
+/* ─── TOP BAR ─────────────────────────────────────────────── */
+.topbar{
+  padding:calc(16px + var(--sat)) var(--pad) 14px;
+  display:flex; align-items:center; justify-content:space-between;
+  flex-shrink:0;
+}
+.topbar-logo{ font-family:var(--fd); font-size:16px; color:var(--p); font-style:italic; }
+.topbar-title{ font-family:var(--fd); font-size:var(--lg); font-weight:600; }
+.topbar-av{
+  width:36px; height:36px; border-radius:50%;
+  background:var(--p); color:#fff;
+  font-family:var(--fd); font-size:14px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+
+/* ─── BOTTOM NAV ──────────────────────────────────────────── */
+.bnav{
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:480px;
+  background:var(--sur); border-top:1px solid var(--bd);
+  display:flex; z-index:500;
+  padding-bottom:var(--sab);
+}
+.bni{
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; gap:3px;
+  padding:10px 0; border:none; background:none;
+  color:var(--tx3); cursor:pointer; transition:color .15s;
+}
+.bni.on{ color:var(--p); }
+.bni-ic{ font-size:19px; line-height:1; }
+.bni-lb{ font-size:10px; font-weight:500; }
+
+/* ─── GENERIC COMPONENTS ──────────────────────────────────── */
+.card{ background:var(--c1); border:1px solid var(--bd); border-radius:16px; }
+.section-hdr{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px var(--pad) 8px;
+}
+.section-title{ font-size:var(--xs); font-weight:600; letter-spacing:1.1px; text-transform:uppercase; color:var(--tx3); }
+.section-link{ font-size:var(--xs); color:var(--p); cursor:pointer; }
+.badge{ font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; display:inline-block; }
+.badge-new{ background:var(--plt); color:var(--p); }
+.badge-ok{ background:var(--grb); color:var(--gr); }
+.row-item{
+  display:flex; align-items:center; gap:12px;
+  padding:12px var(--pad); border-bottom:1px solid var(--bd);
+}
+.row-item:last-child{ border-bottom:none; }
+.row-icon{
+  width:38px; height:38px; border-radius:11px;
+  background:var(--c2); display:flex; align-items:center;
+  justify-content:center; font-size:17px; flex-shrink:0;
+}
+.row-info{ flex:1; min-width:0; }
+.row-nm{ font-weight:500; font-size:var(--sm); }
+.row-det{ font-size:var(--xs); color:var(--tx3); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.row-right{ text-align:right; flex-shrink:0; }
+.row-amt{ font-weight:600; font-size:var(--sm); }
+.row-time{ font-size:var(--xs); color:var(--tx3); margin-top:2px; }
+.inline-tabs{
+  display:flex; border-bottom:1px solid var(--bd);
+  padding:0 var(--pad); flex-shrink:0;
+}
+.itab{
+  padding:14px 0; margin-right:24px;
+  font-size:var(--sm); font-weight:500; color:var(--tx3);
+  cursor:pointer; border-bottom:2px solid transparent;
+  margin-bottom:-1px; transition:color .15s,border-color .15s;
+  min-height:var(--t); display:flex; align-items:center;
+}
+.itab.on{ color:var(--p); border-bottom-color:var(--p); }
+.pane{ display:none; flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px var(--pad); }
+.pane.on{ display:block; }
+.switch{
+  width:44px; height:24px; border-radius:12px;
+  background:var(--bd2); position:relative; cursor:pointer;
+  transition:background .2s; flex-shrink:0;
+}
+.switch.on{ background:var(--p); }
+.switch::after{
+  content:''; position:absolute; top:3px; left:3px;
+  width:18px; height:18px; border-radius:50%;
+  background:#fff; transition:transform .2s;
+}
+.switch.on::after{ transform:translateX(20px); }
+.input-lbl{ font-size:var(--xs); color:var(--tx3); margin-bottom:5px; display:block; text-transform:uppercase; letter-spacing:.5px; font-weight:600; }
+.input-f{
+  width:100%; background:var(--c2); border:1px solid var(--bd2);
+  border-radius:10px; padding:10px 12px; color:var(--tx); font-size:var(--sm);
+  transition:border-color .15s;
+}
+.input-f:focus{ border-color:var(--p); }
+.input-f::placeholder{ color:var(--tx3); }
+.btn-full{
+  width:100%; padding:14px; border-radius:12px;
+  background:var(--p); color:#fff; font-family:var(--fb);
+  font-size:var(--bs); font-weight:600; cursor:pointer; border:none;
+  transition:background .15s; margin-top:8px;
+}
+.btn-full.ok{ background:var(--gr); }
+
+/* ─── STATUS BANNER ───────────────────────────────────────── */
+.s-banner{
+  margin:0 var(--pad) 14px; border-radius:13px;
+  padding:13px 16px; display:flex; align-items:center;
+  justify-content:space-between; gap:12px; flex-shrink:0;
+}
+.s-banner.open{ background:var(--amb); border:1px solid #4D3010; }
+.s-banner.locked{ background:var(--grb); border:1px solid #1E4010; }
+.s-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; animation:pulse 2s infinite; }
+.open .s-dot{ background:var(--am); }
+.locked .s-dot{ background:var(--gr); }
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.s-txt{ font-size:var(--xs); line-height:1.4; }
+.open  .s-txt{ color:var(--am); }
+.locked .s-txt{ color:var(--gr); }
+.s-txt strong{ font-weight:600; }
+.s-timer{ font-family:var(--fd); font-size:var(--lg); font-weight:600; white-space:nowrap; color:var(--am); }
+
+/* ─── HOME STATS ──────────────────────────────────────────── */
+.stats-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 var(--pad) 4px; }
+.stat-card{ background:var(--c1); border:1px solid var(--bd); border-radius:14px; padding:14px 16px; }
+.stat-card.hl{ background:var(--p); border-color:var(--pdk); }
+.stat-lbl{ font-size:var(--xs); color:var(--tx3); margin-bottom:5px; }
+.stat-card.hl .stat-lbl{ color:rgba(255,255,255,.7); }
+.stat-val{ font-family:var(--fd); font-size:var(--xl); font-weight:600; line-height:1; }
+.stat-card.hl .stat-val{ color:#fff; }
+.stat-sub{ font-size:var(--xs); color:var(--tx3); margin-top:4px; }
+.stat-card.hl .stat-sub{ color:rgba(255,255,255,.6); }
+
+/* ─── WEEK STRIP ──────────────────────────────────────────── */
+.week-strip{ display:grid; grid-template-columns:repeat(7,1fr); gap:5px; padding:0 var(--pad) 16px; }
+.wsd{
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:9px 2px; border-radius:11px; border:1px solid var(--bd); background:var(--c1);
+}
+.wsd.on{ border-color:var(--bd2); }
+.wsd.hoy{ background:var(--p); border-color:var(--pdk); }
+.wsd.off{ opacity:.3; }
+.wsd-nm{ font-size:9px; font-weight:600; letter-spacing:.4px; text-transform:uppercase; color:var(--tx3); }
+.wsd.hoy .wsd-nm{ color:rgba(255,255,255,.75); }
+.wsd.on  .wsd-nm{ color:var(--tx3); }
+.wsd-n{ font-size:var(--sm); font-weight:600; color:var(--tx); }
+.wsd.hoy .wsd-n{ color:#fff; }
+.wsd-dot{ width:5px; height:5px; border-radius:50%; background:var(--bd2); }
+.wsd.on  .wsd-dot{ background:var(--gr); }
+.wsd.hoy .wsd-dot{ background:#fff; }
+
+/* ─── MENÚ PREVIEW HOME ───────────────────────────────────── */
+.menu-prev-row{
+  display:flex; align-items:center; gap:12px;
+  padding:10px var(--pad); border-bottom:1px solid var(--bd);
+}
+.menu-prev-row:last-child{ border-bottom:none; }
+.menu-prev-icon{ font-size:20px; width:28px; text-align:center; flex-shrink:0; }
+.menu-prev-info{ flex:1; min-width:0; }
+.menu-prev-day{ font-size:var(--xs); font-weight:600; color:var(--tx3); }
+.menu-prev-nm{ font-size:var(--sm); color:var(--tx); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.menu-prev-price{ font-size:var(--xs); color:var(--tx3); flex-shrink:0; }
+
+/* ─── PRODUCCIÓN ──────────────────────────────────────────── */
+.prod-day{ margin-bottom:16px; }
+.prod-day-hdr{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.prod-day-title{ font-family:var(--fd); font-size:var(--lg); font-weight:600; }
+.prod-total{ font-size:var(--xs); font-weight:600; padding:3px 11px; border-radius:20px; background:var(--plt); color:var(--p); }
+.prod-card{ background:var(--c1); border:1px solid var(--bd); border-radius:13px; overflow:hidden; }
+.prod-row{ display:flex; align-items:center; gap:10px; padding:11px 14px; border-bottom:1px solid var(--bd); }
+.prod-row:last-child{ border-bottom:none; }
+.prod-info{ flex:1; min-width:0; }
+.prod-nm{ font-size:var(--sm); font-weight:500; }
+.prod-pl{ font-size:var(--xs); color:var(--tx3); margin-top:1px; }
+.prod-qty{ min-width:32px; text-align:center; font-size:var(--sm); font-weight:600; color:var(--tx2); }
+.prod-rm{
+  width:30px; height:30px; border-radius:50%;
+  border:1px solid var(--bd); color:var(--tx3);
+  cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:15px;
+  flex-shrink:0; transition:background .15s,color .15s;
+}
+.prod-rm:active{ background:var(--reb); color:var(--re); }
+.prod-empty{ padding:16px; text-align:center; font-size:var(--xs); color:var(--tx3); }
+
+/* ─── HISTORIAL ───────────────────────────────────────────── */
+.hist-day{ margin-bottom:14px; }
+.hist-day-hdr{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.hist-lbl{ font-size:var(--xs); font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--tx3); }
+.hist-total{ font-size:var(--xs); color:var(--tx3); }
+.hist-card{ background:var(--c1); border:1px solid var(--bd); border-radius:13px; overflow:hidden; }
+.hist-row{ display:flex; align-items:center; gap:10px; padding:11px 14px; border-bottom:1px solid var(--bd); }
+.hist-row:last-child{ border-bottom:none; }
+.hist-info{ flex:1; min-width:0; }
+.hist-nm{ font-size:var(--sm); font-weight:500; }
+.hist-det{ font-size:var(--xs); color:var(--tx3); margin-top:1px; }
+.hist-right{ text-align:right; flex-shrink:0; }
+.hist-amt{ font-size:var(--sm); font-weight:600; }
+.hist-ok{ font-size:10px; color:var(--gr); margin-top:2px; }
+
+/* ─── COMBOS ──────────────────────────────────────────────── */
+.combo-card{ background:var(--c1); border:1px solid var(--bd); border-radius:16px; margin-bottom:14px; overflow:hidden; }
+.combo-hdr{ display:flex; align-items:center; gap:12px; padding:14px 16px; border-bottom:1px solid var(--bd); }
+.combo-av{
+  width:40px; height:40px; border-radius:50%;
+  background:var(--plt); color:var(--p);
+  font-family:var(--fd); font-size:15px; font-weight:600;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.combo-nm{ font-size:var(--sm); font-weight:600; }
+.combo-plan{ font-size:var(--xs); color:var(--tx3); margin-top:2px; }
+.combo-vence{ font-size:var(--xs); text-align:right; flex-shrink:0; }
+.combo-vence-lbl{ color:var(--tx3); }
+.combo-vence-val{ font-weight:600; margin-top:2px; }
+.combo-week-lbl{ font-size:9px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; color:var(--tx3); padding:8px 14px 4px; border-top:1px solid var(--bd); }
+.dias-grid{ display:grid; grid-template-columns:repeat(5,1fr); }
+.dia-cell{
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:10px 4px; border-right:1px solid var(--bd);
+  cursor:pointer; user-select:none; transition:background .15s;
+}
+.dia-cell:last-child{ border-right:none; }
+.dia-cell:active{ background:var(--c2); }
+.dia-nm{ font-size:9px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; color:var(--tx3); }
+.dia-fecha{ font-size:10px; color:var(--tx3); }
+.dia-check{
+  width:28px; height:28px; border-radius:50%;
+  border:1.5px solid var(--bd2); font-size:13px;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .2s,border-color .2s; color:transparent;
+}
+.dia-check.done{ background:var(--gr); border-color:var(--gr); color:#fff; }
+.combo-footer{ display:flex; align-items:center; gap:10px; padding:10px 14px; background:var(--c2); border-top:1px solid var(--bd); }
+.combo-prog-lbl{ font-size:var(--xs); color:var(--tx3); white-space:nowrap; }
+.combo-prog-lbl strong{ color:var(--tx); }
+.combo-bar{ flex:1; height:4px; background:var(--bd2); border-radius:4px; overflow:hidden; }
+.combo-fill{ height:100%; background:var(--gr); border-radius:4px; transition:width .3s; }
+.combo-pct{ font-size:var(--xs); color:var(--gr); font-weight:600; white-space:nowrap; }
+
+/* ─── MENÚ ────────────────────────────────────────────────── */
+.day-tabs-scroll{ display:flex; gap:6px; padding:10px var(--pad); overflow-x:auto; scrollbar-width:none; flex-shrink:0; }
+.day-tabs-scroll::-webkit-scrollbar{ display:none; }
+.day-tab{
+  flex-shrink:0; display:flex; flex-direction:column;
+  align-items:center; gap:2px; padding:8px 12px;
+  border-radius:11px; border:1px solid var(--bd);
+  background:var(--c1); cursor:pointer; transition:background .15s,border-color .15s;
+}
+.day-tab.on{ background:var(--p); border-color:var(--pdk); }
+.day-tab-nm{ font-size:10px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; color:var(--tx3); }
+.day-tab.on .day-tab-nm{ color:rgba(255,255,255,.75); }
+.day-tab-n{ font-size:var(--bs); font-weight:600; color:var(--tx); }
+.day-tab.on .day-tab-n{ color:#fff; }
+.plato-card{ background:var(--c1); border:1px solid var(--bd); border-radius:15px; padding:16px; margin-bottom:10px; }
+.plato-top{ display:flex; align-items:flex-start; gap:12px; margin-bottom:14px; }
+.plato-ic{ width:50px; height:50px; border-radius:13px; background:var(--plt); display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; flex-shrink:0; border:1px solid var(--bd2); }
+.plato-f-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+.acomp-hdr{ display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; }
+.acomp-tag{ font-size:var(--xs); padding:2px 8px; border-radius:20px; }
+.acomp-tag.open{ background:var(--amb); color:var(--am); }
+.acomp-tag.locked{ background:var(--bd); color:var(--tx3); }
+.plato-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+.btn-del{ padding:8px 14px; border-radius:8px; background:var(--reb); color:var(--re); font-size:var(--xs); font-weight:600; cursor:pointer; border:1px solid rgba(212,74,74,.2); }
+.btn-save{ padding:8px 14px; border-radius:8px; background:var(--p); color:#fff; font-size:var(--xs); font-weight:600; cursor:pointer; border:none; }
+.btn-save.ok{ background:var(--gr); }
+.btn-add-plato{ width:100%; padding:13px; border-radius:13px; border:1.5px dashed var(--bd2); background:none; color:var(--tx3); font-size:var(--sm); cursor:pointer; margin-top:4px; }
+.btn-add-plato:active{ border-color:var(--p); color:var(--p); }
+
+/* ─── PLANES ──────────────────────────────────────────────── */
+.plan-card{ background:var(--c1); border:1.5px solid var(--bd); border-radius:15px; padding:16px; margin-bottom:10px; }
+.plan-card.feat{ border-color:var(--p); }
+.plan-row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0; }
+.switch-row{ display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
+.switch-lbl{ font-size:var(--sm); color:var(--tx2); }
+.btn-add-plan{ width:100%; padding:13px; border-radius:13px; border:1.5px dashed var(--bd2); background:none; color:var(--tx3); font-size:var(--sm); cursor:pointer; margin-top:4px; }
+
+/* ─── PERFIL ──────────────────────────────────────────────── */
+.perfil-av-wrap{ display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+.perfil-av{ width:68px; height:68px; border-radius:50%; background:var(--p); color:#fff; font-family:var(--fd); font-size:24px; font-weight:600; display:flex; align-items:center; justify-content:center; }
+.perfil-av-nm{ font-family:var(--fd); font-size:var(--lg); font-weight:600; }
+.perfil-av-url{ font-size:var(--xs); color:var(--p); margin-top:4px; }
+.fgroup{ margin-bottom:14px; }
+.fctrl{ width:100%; background:var(--c1); border:1px solid var(--bd2); border-radius:11px; padding:12px 14px; color:var(--tx); font-size:var(--sm); transition:border-color .15s; }
+.fctrl:focus{ border-color:var(--p); }
+.fctrl::placeholder{ color:var(--tx3); }
+textarea.fctrl{ resize:none; line-height:1.6; }
+.url-preview{ background:var(--plt); border:1px solid var(--bd2); border-radius:9px; padding:9px 13px; font-size:var(--xs); color:var(--p); margin-top:7px; word-break:break-all; }
+.dias-toggle-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:5px; }
+.dia-tog{
+  display:flex; flex-direction:column; align-items:center; gap:4px;
+  padding:9px 2px; border-radius:11px; border:1.5px solid var(--bd2);
+  background:var(--c1); cursor:pointer; transition:all .15s;
+}
+.dia-tog.on{ border-color:var(--p); background:var(--plt); }
+.dia-tog-nm{ font-size:9px; font-weight:600; letter-spacing:.4px; text-transform:uppercase; color:var(--tx3); }
+.dia-tog.on .dia-tog-nm{ color:var(--p); }
+.dia-tog-dot{ width:6px; height:6px; border-radius:50%; background:var(--bd2); transition:background .15s; }
+.dia-tog.on .dia-tog-dot{ background:var(--p); }
+.vac-box{ background:var(--c1); border:1px solid var(--bd); border-radius:13px; padding:14px 16px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HOME
+═══════════════════════════════════════════════════════════ -->
+<div class="screen on" id="s-home">
+  <div class="topbar">
+    <span class="topbar-logo">viandita</span>
+    <div class="topbar-av" id="home-av">ML</div>
+  </div>
+
+  <div style="padding:0 var(--pad) 14px">
+    <div style="font-size:var(--xs);color:var(--tx3);margin-bottom:4px">Hola de nuevo,</div>
+    <div style="font-family:var(--fd);font-size:var(--xl);font-weight:600;line-height:1.1">
+      María <em style="font-style:italic;color:var(--p)">Laura</em> 👋
+    </div>
+  </div>
+
+  <div id="home-banner" style="margin:0 var(--pad) 14px"></div>
+
+  <!-- Week strip -->
+  <div class="week-strip" id="home-week-strip"></div>
+
+  <!-- Stats -->
+  <div class="stats-grid" style="margin-bottom:4px">
+    <div class="stat-card hl">
+      <div class="stat-lbl">Esta semana</div>
+      <div class="stat-val">23</div>
+      <div class="stat-sub">pedidos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-lbl">Facturado</div>
+      <div class="stat-val">$198k</div>
+      <div class="stat-sub">esta semana</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-lbl">Clientes activos</div>
+      <div class="stat-val">14</div>
+      <div class="stat-sub">con plan vigente</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-lbl">Tu link</div>
+      <div style="font-size:11px;color:var(--p);font-weight:600;margin-top:6px;line-height:1.4">
+        viandita.com.ar/<br>marialauara
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview últimos pedidos -->
+  <div class="section-hdr">
+    <span class="section-title">Últimos pedidos</span>
+    <span class="section-link" onclick="go('pedidos')">Ver todos</span>
+  </div>
+  <div class="card" style="margin:0 var(--pad);padding:0;overflow:hidden">
+    <div class="row-item">
+      <div class="row-icon">👤</div>
+      <div class="row-info">
+        <div class="row-nm">Carla M. <span class="badge badge-new">Nuevo</span></div>
+        <div class="row-det">Lun: Milanesa x1 · Jue: Guiso x1</div>
+      </div>
+      <div class="row-right">
+        <div class="row-amt">$19.000</div>
+        <div class="row-time">12 min</div>
+      </div>
+    </div>
+    <div class="row-item">
+      <div class="row-icon">👤</div>
+      <div class="row-info">
+        <div class="row-nm">Rodrigo P. <span class="badge badge-ok">Confirmado</span></div>
+        <div class="row-det">Pack 5 días</div>
+      </div>
+      <div class="row-right">
+        <div class="row-amt">$42.000</div>
+        <div class="row-time">1 h</div>
+      </div>
+    </div>
+    <div class="row-item">
+      <div class="row-icon">👤</div>
+      <div class="row-info">
+        <div class="row-nm">Sofía L. <span class="badge badge-ok">Confirmado</span></div>
+        <div class="row-det">Mié: Tarta x2</div>
+      </div>
+      <div class="row-right">
+        <div class="row-amt">$15.000</div>
+        <div class="row-time">3 h</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview menú semana -->
+  <div class="section-hdr">
+    <span class="section-title">Menú de esta semana</span>
+    <span class="section-link" onclick="go('menu')">Editar</span>
+  </div>
+  <div class="card" style="margin:0 var(--pad);padding:0;overflow:hidden" id="home-menu-prev"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PEDIDOS
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-pedidos">
+  <div class="topbar">
+    <span class="topbar-title">Pedidos</span>
+    <div class="topbar-av">ML</div>
+  </div>
+  <div class="inline-tabs">
+    <div class="itab on" id="ptab-prod" onclick="pedTab('prod')">Producción</div>
+    <div class="itab" id="ptab-hist" onclick="pedTab('hist')">Historial</div>
+  </div>
+  <div class="pane on" id="pp-prod"></div>
+  <div class="pane" id="pp-hist"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     COMBOS
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-combos">
+  <div class="topbar">
+    <span class="topbar-title">Combos activos</span>
+    <div class="topbar-av">ML</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px var(--pad)" id="combos-wrap"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     MENÚ
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-menu">
+  <div class="topbar">
+    <span class="topbar-title">Menú semanal</span>
+    <div class="topbar-av">ML</div>
+  </div>
+  <div id="menu-banner" style="margin:0 var(--pad) 10px"></div>
+  <div class="day-tabs-scroll" id="day-tabs"></div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 var(--pad) 8px" id="platos-wrap"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PLANES
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-planes">
+  <div class="topbar">
+    <span class="topbar-title">Mis planes</span>
+    <div class="topbar-av">ML</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px var(--pad)" id="planes-wrap"></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PERFIL
+═══════════════════════════════════════════════════════════ -->
+<div class="screen" id="s-perfil">
+  <div class="topbar">
+    <span class="topbar-title">Mi perfil</span>
+    <div class="topbar-av">ML</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 var(--pad) 16px">
+    <div class="perfil-av-wrap">
+      <div class="perfil-av">ML</div>
+      <div>
+        <div class="perfil-av-nm">María Laura</div>
+        <div class="perfil-av-url">viandita.com.ar/marialauara</div>
+      </div>
+    </div>
+    <div class="fgroup"><label class="input-lbl">Nombre</label><input class="fctrl" type="text" value="María Laura"></div>
+    <div class="fgroup"><label class="input-lbl">Especialidad</label><input class="fctrl" type="text" value="Cocina casera tradicional"></div>
+    <div class="fgroup"><label class="input-lbl">Bio</label><textarea class="fctrl" rows="3">Cocinera hace 8 años. Hago la comida que me hubiese gustado recibir cuando trabajaba todo el día.</textarea></div>
+    <div class="fgroup"><label class="input-lbl">Zona de entrega</label><input class="fctrl" type="text" value="Palermo · Villa Crespo"></div>
+    <div class="fgroup"><label class="input-lbl">WhatsApp</label><input class="fctrl" type="tel" value="+54 9 11 5555 5555"></div>
+    <div class="fgroup"><label class="input-lbl">Cierre de pedidos</label><input class="fctrl" type="time" value="21:00"></div>
+    <div class="fgroup">
+      <label class="input-lbl">Tu link público</label>
+      <input class="fctrl" type="text" value="marialauara" oninput="updateUrl(this.value)">
+      <div class="url-preview" id="url-prev">viandita.com.ar/marialauara</div>
+    </div>
+    <div class="fgroup">
+      <label class="input-lbl">Días de entrega</label>
+      <div class="dias-toggle-grid" id="dias-tog" style="margin-top:6px"></div>
+    </div>
+    <div class="fgroup">
+      <div class="vac-box">
+        <div class="switch-row" style="margin-top:0">
+          <div>
+            <div style="font-size:var(--sm);font-weight:500">Modo vacaciones</div>
+            <div style="font-size:var(--xs);color:var(--tx3);margin-top:3px;line-height:1.4">Pausa todos los días. Tus clientes ven que no estás disponible.</div>
+          </div>
+          <div class="switch" id="vac-sw" onclick="toggleVac()" style="margin-left:16px"></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-full" id="save-btn" onclick="savePerfil()">Guardar cambios</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     BOTTOM NAV
+═══════════════════════════════════════════════════════════ -->
+<div class="bnav">
+  <button class="bni on" id="nav-home"    onclick="go('home')">   <span class="bni-ic">⊞</span><span class="bni-lb">Inicio</span></button>
+  <button class="bni"    id="nav-pedidos" onclick="go('pedidos')"> <span class="bni-ic">📋</span><span class="bni-lb">Pedidos</span></button>
+  <button class="bni"    id="nav-combos"  onclick="go('combos')">  <span class="bni-ic">📦</span><span class="bni-lb">Combos</span></button>
+  <button class="bni"    id="nav-menu"    onclick="go('menu')">    <span class="bni-ic">🍱</span><span class="bni-lb">Menú</span></button>
+  <button class="bni"    id="nav-planes"  onclick="go('planes')">  <span class="bni-ic">💰</span><span class="bni-lb">Planes</span></button>
+  <button class="bni"    id="nav-perfil"  onclick="go('perfil')">  <span class="bni-ic">👤</span><span class="bni-lb">Perfil</span></button>
+</div>
+
+
+<script>
+// ── DATOS ──────────────────────────────────────────────────────
+const DIAS_KEY =['lun','mar','mie','jue','vie'];
+const DIAS_CORTO=['Lun','Mar','Mié','Jue','Vie'];
+const DIAS_7    =['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const DIAS_7K   =['lun','mar','mie','jue','vie','sab','dom'];
+
+let diasActivos={lun:true,mar:true,mie:true,jue:true,vie:true,sab:false,dom:false};
+let vacaciones=false;
+let selDay=0;
+
+let MENU={
+  lun:[{nm:'Milanesa napolitana',    acomp:'Puré de papas casero',        precio:9500,  icon:'🍖'}],
+  mar:[{nm:'Pollo al limón y ajo',   acomp:'Arroz yamani y vegetales',    precio:8800,  icon:'🍗'}],
+  mie:[{nm:'Tarta de espinaca',      acomp:'Ensalada verde con semillas', precio:7500,  icon:'🥧'}],
+  jue:[{nm:'Guiso de lentejas',      acomp:'Pan casero de masa madre',    precio:7000,  icon:'🥘'}],
+  vie:[{nm:'Cazuela de pollo',       acomp:'Papas al horno y morrón',     precio:8200,  icon:'🍲'}],
+};
+
+let PLANES=[
+  {nm:'Pack 5 días',  desc:'1 vianda por día, lunes a viernes',  precio:42000, ahorro:5500,  feat:false, activo:true},
+  {nm:'Pack 10 días', desc:'2 semanas, 1 vianda/día lun-vie',    precio:78000, ahorro:12000, feat:true,  activo:true},
+  {nm:'Pack mensual', desc:'4 semanas completas, lun a vie',     precio:148000,ahorro:30000, feat:false, activo:true},
+];
+
+const PROD={
+  lun:[{nm:'Carla M.',   pl:'Milanesa napolitana',qty:1},
+       {nm:'Lucas T.',   pl:'Milanesa napolitana',qty:2},
+       {nm:'Ana G.',     pl:'Milanesa napolitana',qty:1}],
+  mar:[{nm:'Lucas T.',   pl:'Pollo al limón y ajo',qty:1},
+       {nm:'Rodrigo P.', pl:'Pollo al limón y ajo',qty:1}],
+  mie:[{nm:'Sofía L.',   pl:'Tarta de espinaca',qty:2}],
+  jue:[{nm:'Carla M.',   pl:'Guiso de lentejas',qty:1},
+       {nm:'Ana G.',     pl:'Guiso de lentejas',qty:1}],
+  vie:[{nm:'Ana G.',     pl:'Cazuela de pollo',qty:1}],
+};
+
+const HIST=[
+  {fecha:'Vie 18/04',total:'$41.700',pedidos:[
+    {nm:'Carla M.',det:'Milanesa x1',      amt:'$9.500'},
+    {nm:'Sofía L.',det:'Tarta x2',         amt:'$15.000'},
+    {nm:'Ana G.',  det:'Cazuela x1',       amt:'$8.200'},
+    {nm:'Rodrigo P.',det:'Pack 5 días',    amt:'$9.000'},
+  ]},
+  {fecha:'Jue 17/04',total:'$35.300',pedidos:[
+    {nm:'Carla M.',det:'Guiso x1',         amt:'$7.000'},
+    {nm:'Lucas T.',det:'Guiso x2',         amt:'$14.000'},
+    {nm:'Ana G.',  det:'Guiso x1',         amt:'$7.000'},
+    {nm:'Sofía L.',det:'Guiso x1',         amt:'$7.000'},
+  ]},
+  {fecha:'Mié 16/04',total:'$23.800',pedidos:[
+    {nm:'Sofía L.',det:'Tarta x2',         amt:'$15.000'},
+    {nm:'Lucas T.',det:'Tarta x1',         amt:'$7.500'},
+  ]},
+  {fecha:'Mar 15/04',total:'$17.600',pedidos:[
+    {nm:'Lucas T.',  det:'Pollo x1',       amt:'$8.800'},
+    {nm:'Rodrigo P.',det:'Pollo x1',       amt:'$8.800'},
+  ]},
+  {fecha:'Lun 14/04',total:'$37.800',pedidos:[
+    {nm:'Carla M.',det:'Milanesa x1',      amt:'$9.500'},
+    {nm:'Lucas T.',det:'Milanesa x2',      amt:'$19.000'},
+    {nm:'Ana G.',  det:'Milanesa x1',      amt:'$9.500'},
+  ]},
+];
+
+const COMBOS=[
+  {nm:'Carla M.',  init:'CM', plan:'Pack 10 días', total:10, vence:'02/05',
+   ent:[
+    {f:'Lun 21/04',done:true},{f:'Mar 22/04',done:true},{f:'Mié 23/04',done:true},
+    {f:'Jue 24/04',done:false},{f:'Vie 25/04',done:false},
+    {f:'Lun 28/04',done:false},{f:'Mar 29/04',done:false},{f:'Mié 30/04',done:false},
+    {f:'Jue 01/05',done:false},{f:'Vie 02/05',done:false},
+  ]},
+  {nm:'Rodrigo P.',init:'RP', plan:'Pack 5 días', total:5, vence:'25/04',
+   ent:[
+    {f:'Lun 21/04',done:true},{f:'Mar 22/04',done:true},
+    {f:'Mié 23/04',done:false},{f:'Jue 24/04',done:false},{f:'Vie 25/04',done:false},
+  ]},
+  {nm:'Sofía L.',  init:'SL', plan:'Pack 10 días', total:10, vence:'02/05',
+   ent:[
+    {f:'Lun 21/04',done:true},{f:'Mar 22/04',done:false},{f:'Mié 23/04',done:false},
+    {f:'Jue 24/04',done:false},{f:'Vie 25/04',done:false},
+    {f:'Lun 28/04',done:false},{f:'Mar 29/04',done:false},{f:'Mié 30/04',done:false},
+    {f:'Jue 01/05',done:false},{f:'Vie 02/05',done:false},
+  ]},
+  {nm:'Lucas T.',  init:'LT', plan:'Pack mensual', total:20, vence:'16/05',
+   ent:[
+    {f:'Lun 21/04',done:true},{f:'Mar 22/04',done:false},{f:'Mié 23/04',done:false},
+    {f:'Jue 24/04',done:false},{f:'Vie 25/04',done:false},
+    {f:'Lun 28/04',done:false},{f:'Mar 29/04',done:false},{f:'Mié 30/04',done:false},
+    {f:'Jue 01/05',done:false},{f:'Vie 02/05',done:false},
+    {f:'Lun 05/05',done:false},{f:'Mar 06/05',done:false},{f:'Mié 07/05',done:false},
+    {f:'Jue 08/05',done:false},{f:'Vie 09/05',done:false},
+    {f:'Lun 12/05',done:false},{f:'Mar 13/05',done:false},{f:'Mié 14/05',done:false},
+    {f:'Jue 15/05',done:false},{f:'Vie 16/05',done:false},
+  ]},
+  {nm:'Ana G.',    init:'AG', plan:'Pack 5 días', total:5, vence:'25/04',
+   ent:[
+    {f:'Lun 21/04',done:true},{f:'Mar 22/04',done:true},{f:'Mié 23/04',done:true},
+    {f:'Jue 24/04',done:false},{f:'Vie 25/04',done:false},
+  ]},
+];
+
+// ── HELPERS ────────────────────────────────────────────────────
+const f=n=>'$'+n.toLocaleString('es-AR');
+const isSun=()=>new Date().getDay()===0;
+
+function weekDates(){
+  const now=new Date(), d=now.getDay();
+  const diff=d===0?-6:1-d;
+  const mon=new Date(now); mon.setDate(now.getDate()+diff); mon.setHours(0,0,0,0);
+  return Array.from({length:7},(_,i)=>{const x=new Date(mon);x.setDate(mon.getDate()+i);return x;});
+}
+
+// ── NAVEGACIÓN ─────────────────────────────────────────────────
+function go(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.bni').forEach(b=>b.classList.remove('on'));
+  document.getElementById('s-'+name).classList.add('on');
+  document.getElementById('nav-'+name).classList.add('on');
+  window.scrollTo(0,0);
+  // Render bajo demanda
+  if(name==='pedidos'){pedTab('prod');}
+  if(name==='combos'){renderCombos();}
+  if(name==='menu'){renderMenu();}
+  if(name==='planes'){renderPlanes();}
+  if(name==='perfil'){renderPerfil();}
+}
+
+// ── BANNER STATUS ──────────────────────────────────────────────
+let timerRef=null;
+function renderBanner(elId,timerElId){
+  const el=document.getElementById(elId);
+  if(isSun()){
+    el.innerHTML=`<div class="s-banner open" style="margin:0 0 14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="s-dot"></div>
+        <div class="s-txt"><strong>Menú abierto</strong><br>Editá hasta las 23:59</div>
+      </div>
+      <div class="s-timer" id="${timerElId}">--:--:--</div>
+    </div>`;
+    function tick(){
+      const t=document.getElementById(timerElId); if(!t) return;
+      const now=new Date(), c=new Date(now); c.setHours(23,59,59,0);
+      const d=c-now;
+      t.textContent=[Math.floor(d/3600000),Math.floor((d%3600000)/60000),Math.floor((d%60000)/1000)]
+        .map(x=>String(x).padStart(2,'0')).join(':');
+    }
+    tick(); if(timerRef) clearInterval(timerRef);
+    timerRef=setInterval(tick,1000);
+  } else {
+    el.innerHTML=`<div class="s-banner locked" style="margin:0 0 14px">
+      <div class="s-dot"></div>
+      <div class="s-txt"><strong>Menú confirmado</strong><br>Solo podés editar el acompañamiento</div>
+    </div>`;
+  }
+}
+
+// ── WEEK STRIP ─────────────────────────────────────────────────
+function renderWeekStrip(){
+  const wk=weekDates();
+  const today=new Date().getDay(); // 0=dom
+  const todayIdx=today===0?6:today-1;
+  document.getElementById('home-week-strip').innerHTML=
+    DIAS_7.map((nm,i)=>{
+      const activo=diasActivos[DIAS_7K[i]]&&!vacaciones;
+      const hoy=i===todayIdx;
+      return`<div class="wsd ${hoy?'hoy':activo?'on':'off'}">
+        <span class="wsd-nm">${nm}</span>
+        <span class="wsd-n">${wk[i].getDate()}</span>
+        <span class="wsd-dot"></span>
+      </div>`;
+    }).join('');
+}
+
+// ── MENÚ PREVIEW HOME ──────────────────────────────────────────
+function renderMenuPrev(){
+  document.getElementById('home-menu-prev').innerHTML=
+    DIAS_KEY.map((d,i)=>{
+      const pl=MENU[d]||[];
+      return`<div class="menu-prev-row">
+        <div class="menu-prev-icon">${pl[0]?.icon||'—'}</div>
+        <div class="menu-prev-info">
+          <div class="menu-prev-day">${DIAS_CORTO[i]}</div>
+          <div class="menu-prev-nm">${pl.map(p=>p.nm).join(' · ')||'Sin plato cargado'}</div>
+        </div>
+        <div class="menu-prev-price">${pl[0]?f(pl[0].precio):''}</div>
+      </div>`;
+    }).join('');
+}
+
+// ── PEDIDOS ────────────────────────────────────────────────────
+function pedTab(t){
+  document.getElementById('ptab-prod').classList.toggle('on',t==='prod');
+  document.getElementById('ptab-hist').classList.toggle('on',t==='hist');
+  document.getElementById('pp-prod').classList.toggle('on',t==='prod');
+  document.getElementById('pp-hist').classList.toggle('on',t==='hist');
+  if(t==='prod') renderProd();
+  if(t==='hist') renderHist();
+}
+
+function renderProd(){
+  const wk=weekDates();
+  document.getElementById('pp-prod').innerHTML=
+    DIAS_KEY.map((d,i)=>{
+      const items=PROD[d]||[];
+      const tot=items.reduce((s,x)=>s+x.qty,0);
+      return`<div class="prod-day">
+        <div class="prod-day-hdr">
+          <div class="prod-day-title">${['Lunes','Martes','Miércoles','Jueves','Viernes'][i]} ${wk[i].getDate()}</div>
+          <div class="prod-total">${tot} vianda${tot!==1?'s':''}</div>
+        </div>
+        <div class="prod-card">
+          ${items.length
+            ? items.map((c,j)=>`
+              <div class="prod-row">
+                <div class="prod-info">
+                  <div class="prod-nm">${c.nm}</div>
+                  <div class="prod-pl">${c.pl}</div>
+                </div>
+                <div class="prod-qty">×${c.qty}</div>
+                <button class="prod-rm" onclick="rmProd('${d}',${j})">×</button>
+              </div>`)
+              .join('')
+            : `<div class="prod-empty">Sin pedidos</div>`
+          }
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function rmProd(dia,j){
+  PROD[dia].splice(j,1);
+  renderProd();
+}
+
+function renderHist(){
+  document.getElementById('pp-hist').innerHTML=
+    HIST.map(dia=>`
+      <div class="hist-day">
+        <div class="hist-day-hdr">
+          <span class="hist-lbl">${dia.fecha}</span>
+          <span class="hist-total">${dia.total}</span>
+        </div>
+        <div class="hist-card">
+          ${dia.pedidos.map(p=>`
+            <div class="hist-row">
+              <div style="width:32px;height:32px;border-radius:9px;background:var(--c2);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">👤</div>
+              <div class="hist-info">
+                <div class="hist-nm">${p.nm}</div>
+                <div class="hist-det">${p.det}</div>
+              </div>
+              <div class="hist-right">
+                <div class="hist-amt">${p.amt}</div>
+                <div class="hist-ok">✓ Entregado</div>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+}
+
+// ── COMBOS ─────────────────────────────────────────────────────
+function renderCombos(){
+  document.getElementById('combos-wrap').innerHTML=
+    COMBOS.map((c,ci)=>{
+      const done=c.ent.filter(e=>e.done).length;
+      const pct=Math.round(done/c.total*100);
+      const semanas=[];
+      for(let i=0;i<c.ent.length;i+=5) semanas.push(c.ent.slice(i,i+5));
+      return`<div class="combo-card">
+        <div class="combo-hdr">
+          <div class="combo-av">${c.init}</div>
+          <div style="flex:1;min-width:0">
+            <div class="combo-nm">${c.nm}</div>
+            <div class="combo-plan">${c.plan}</div>
+          </div>
+          <div class="combo-vence">
+            <div class="combo-vence-lbl">Vence</div>
+            <div class="combo-vence-val">${c.vence}</div>
+          </div>
+        </div>
+        ${semanas.map((sem,si)=>`
+          <div class="combo-week-lbl">Semana ${si+1}</div>
+          <div class="dias-grid">
+            ${sem.map((e,ei)=>{
+              const gi=si*5+ei;
+              return`<div class="dia-cell" onclick="togEnt(${ci},${gi})">
+                <span class="dia-nm">${e.f.split(' ')[0]}</span>
+                <span class="dia-fecha">${e.f.split(' ')[1]}</span>
+                <div class="dia-check ${e.done?'done':''}">${e.done?'✓':''}</div>
+              </div>`;
+            }).join('')}
+          </div>`).join('')}
+        <div class="combo-footer">
+          <span class="combo-prog-lbl"><strong>${done}/${c.total}</strong> entregadas</span>
+          <div class="combo-bar"><div class="combo-fill" style="width:${pct}%"></div></div>
+          <span class="combo-pct">${pct}%</span>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function togEnt(ci,ei){
+  COMBOS[ci].ent[ei].done=!COMBOS[ci].ent[ei].done;
+  renderCombos();
+}
+
+// ── MENÚ ───────────────────────────────────────────────────────
+function renderMenu(){
+  renderBanner('menu-banner','menu-timer');
+  renderDayTabs();
+  renderPlatos();
+}
+
+function renderDayTabs(){
+  const wk=weekDates();
+  document.getElementById('day-tabs').innerHTML=
+    DIAS_KEY.map((d,i)=>`
+      <div class="day-tab ${i===selDay?'on':''}" onclick="selD(${i})">
+        <span class="day-tab-nm">${DIAS_CORTO[i]}</span>
+        <span class="day-tab-n">${wk[i].getDate()}</span>
+      </div>`).join('');
+}
+
+function selD(i){ selDay=i; renderDayTabs(); renderPlatos(); }
+
+const ICONS=['🍖','🍗','🥧','🥘','🍲','🥗','🍝','🍛','🫕','🥩','🐟','🌯','🥚','🍳'];
+
+function renderPlatos(){
+  const d=DIAS_KEY[selDay];
+  const pl=MENU[d]||[];
+  const open=isSun();
+  document.getElementById('platos-wrap').innerHTML=
+    pl.map((p,i)=>`
+      <div class="plato-card">
+        <div class="plato-top">
+          <div class="plato-ic" onclick="cycleIcon('${d}',${i})">${p.icon}</div>
+          <div style="flex:1;min-width:0">
+            <label class="input-lbl">Nombre del plato</label>
+            <input class="input-f" value="${p.nm}" onchange="MENU['${d}'][${i}].nm=this.value">
+          </div>
+        </div>
+        <div class="plato-f-row">
+          <div>
+            <label class="input-lbl">Precio</label>
+            <input class="input-f" type="number" value="${p.precio}" ${!open?'readonly':''} onchange="MENU['${d}'][${i}].precio=+this.value">
+          </div>
+          <div>
+            <label class="input-lbl">Disponibles</label>
+            <input class="input-f" type="number" placeholder="Sin límite">
+          </div>
+        </div>
+        <div>
+          <div class="acomp-hdr">
+            <label class="input-lbl" style="margin-bottom:0">Acompañamiento</label>
+            <span class="acomp-tag ${open?'open':'locked'}">${open?'✏️ editable':'🔒 fijo'}</span>
+          </div>
+          <input class="input-f" style="margin-top:6px" value="${p.acomp}" placeholder="Ej: Puré de papas" onchange="MENU['${d}'][${i}].acomp=this.value">
+        </div>
+        <div class="plato-actions">
+          <button class="btn-del" onclick="delPlato('${d}',${i})">Eliminar</button>
+          <button class="btn-save" id="sv-${d}-${i}" onclick="savePlato('${d}',${i})">Guardar</button>
+        </div>
+      </div>`)
+    .join('')+
+    `<button class="btn-add-plato" onclick="addPlato('${d}')">+ Agregar plato para este día</button>`;
+}
+
+function cycleIcon(d,i){
+  const cur=ICONS.indexOf(MENU[d][i].icon);
+  MENU[d][i].icon=ICONS[(cur+1)%ICONS.length];
+  renderPlatos(); renderMenuPrev();
+}
+function delPlato(d,i){ MENU[d].splice(i,1); renderPlatos(); renderMenuPrev(); }
+function addPlato(d){ (MENU[d]=MENU[d]||[]).push({nm:'',acomp:'',precio:0,icon:'🍱'}); renderPlatos(); }
+function savePlato(d,i){
+  const btn=document.getElementById(`sv-${d}-${i}`);
+  btn.textContent='✓'; btn.classList.add('ok');
+  setTimeout(()=>{btn.textContent='Guardar';btn.classList.remove('ok');},2000);
+  renderMenuPrev();
+}
+
+// ── PLANES ─────────────────────────────────────────────────────
+function renderPlanes(){
+  document.getElementById('planes-wrap').innerHTML=
+    PLANES.map((p,i)=>`
+      <div class="plan-card ${p.feat?'feat':''}">
+        <div class="fgroup" style="margin-bottom:10px">
+          <label class="input-lbl">Nombre</label>
+          <input class="input-f" value="${p.nm}" onchange="PLANES[${i}].nm=this.value">
+        </div>
+        <div class="fgroup" style="margin-bottom:10px">
+          <label class="input-lbl">Descripción</label>
+          <input class="input-f" value="${p.desc}" onchange="PLANES[${i}].desc=this.value">
+        </div>
+        <div class="plan-row2">
+          <div><label class="input-lbl">Precio</label><input class="input-f" type="number" value="${p.precio}" onchange="PLANES[${i}].precio=+this.value"></div>
+          <div><label class="input-lbl">Ahorro</label><input class="input-f" type="number" value="${p.ahorro}" onchange="PLANES[${i}].ahorro=+this.value"></div>
+        </div>
+        <div class="switch-row"><span class="switch-lbl">Más popular</span><div class="switch ${p.feat?'on':''}" onclick="togFeat(${i})"></div></div>
+        <div class="switch-row"><span class="switch-lbl">Activo</span><div class="switch ${p.activo?'on':''}" onclick="togActivo(${i})"></div></div>
+      </div>`)
+    .join('')+
+    `<button class="btn-add-plan" onclick="addPlan()">+ Agregar plan</button>`;
+}
+
+function togFeat(i){ PLANES.forEach((p,j)=>p.feat=j===i?!p.feat:false); renderPlanes(); }
+function togActivo(i){ PLANES[i].activo=!PLANES[i].activo; renderPlanes(); }
+function addPlan(){ PLANES.push({nm:'Nuevo plan',desc:'',precio:0,ahorro:0,feat:false,activo:true}); renderPlanes(); }
+
+// ── PERFIL ─────────────────────────────────────────────────────
+function renderPerfil(){
+  document.getElementById('dias-tog').innerHTML=
+    DIAS_7.map((nm,i)=>`
+      <div class="dia-tog ${diasActivos[DIAS_7K[i]]?'on':''}" onclick="togDia('${DIAS_7K[i]}')">
+        <span class="dia-tog-nm">${nm}</span>
+        <span class="dia-tog-dot"></span>
+      </div>`).join('');
+}
+
+function togDia(k){ diasActivos[k]=!diasActivos[k]; renderPerfil(); renderWeekStrip(); }
+function toggleVac(){ vacaciones=!vacaciones; document.getElementById('vac-sw').classList.toggle('on',vacaciones); renderWeekStrip(); }
+function updateUrl(v){ document.getElementById('url-prev').textContent='viandita.com.ar/'+v.toLowerCase().replace(/\s/g,''); }
+function savePerfil(){
+  const btn=document.getElementById('save-btn');
+  btn.textContent='✓ Guardado'; btn.classList.add('ok');
+  setTimeout(()=>{btn.textContent='Guardar cambios';btn.classList.remove('ok');},2500);
+}
+
+// ── INIT ───────────────────────────────────────────────────────
+renderBanner('home-banner','home-timer');
+renderWeekStrip();
+renderMenuPrev();
+renderProd(); // pre-carga para cuando abran pedidos
+</script>
+</body>
+</html>
