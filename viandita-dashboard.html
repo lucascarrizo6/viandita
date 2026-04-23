@@ -289,19 +289,24 @@ body{
 .combo-pct{ font-size:var(--xs); color:var(--gr); font-weight:600; white-space:nowrap; }
 
 /* ─── MENÚ ────────────────────────────────────────────────── */
-.day-tabs-scroll{ display:flex; gap:6px; padding:10px var(--pad); overflow-x:auto; scrollbar-width:none; flex-shrink:0; }
-.day-tabs-scroll::-webkit-scrollbar{ display:none; }
-.day-tab{
-  flex-shrink:0; display:flex; flex-direction:column;
-  align-items:center; gap:2px; padding:8px 12px;
-  border-radius:11px; border:1px solid var(--bd);
-  background:var(--c1); cursor:pointer; transition:background .15s,border-color .15s;
+.menu-day-item{
+  display:flex;align-items:center;gap:12px;
+  padding:14px var(--pad);border-bottom:1px solid var(--bd);
+  transition:background .1s;
 }
-.day-tab.on{ background:var(--p); border-color:var(--pdk); }
-.day-tab-nm{ font-size:10px; font-weight:600; letter-spacing:.5px; text-transform:uppercase; color:var(--tx3); }
-.day-tab.on .day-tab-nm{ color:rgba(255,255,255,.75); }
-.day-tab-n{ font-size:var(--bs); font-weight:600; color:var(--tx); }
-.day-tab.on .day-tab-n{ color:#fff; }
+.menu-day-item.clickable{cursor:pointer}
+.menu-day-item.clickable:active{background:var(--c1)}
+.menu-day-item.dimmed{opacity:.4}
+.menu-day-nm{font-size:var(--bs);font-weight:600}
+.menu-day-date{font-size:var(--xs);color:var(--tx3);margin-top:3px}
+.menu-day-badge{font-size:10px;font-weight:600;padding:2px 9px;border-radius:20px}
+.badge-pasado{background:var(--bd2);color:var(--tx3)}
+.badge-hoy{background:var(--plt);color:var(--p)}
+.badge-activo{background:var(--grb);color:var(--gr)}
+.badge-off{background:var(--c2);color:var(--tx3)}
+.menu-back-btn{font-size:var(--bs);color:var(--p);background:none;border:none;cursor:pointer;padding:0;font-family:var(--fb);font-weight:500}
+.switch.grn{background:var(--gr)}
+.switch.grn::after{transform:translateX(20px)}
 .plato-card{ background:var(--c1); border:1px solid var(--bd); border-radius:15px; padding:16px; margin-bottom:10px; }
 .plato-top{ display:flex; align-items:flex-start; gap:12px; margin-bottom:14px; }
 .plato-ic{ width:50px; height:50px; border-radius:13px; background:var(--plt); display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; flex-shrink:0; border:1px solid var(--bd2); }
@@ -316,7 +321,6 @@ body{
 .btn-save.ok{ background:var(--gr); }
 .btn-add-plato{ width:100%; padding:13px; border-radius:13px; border:1.5px dashed var(--bd2); background:none; color:var(--tx3); font-size:var(--sm); cursor:pointer; margin-top:4px; }
 .btn-add-plato:active{ border-color:var(--p); color:var(--p); }
-.day-tab.blocked{opacity:.4}
 .day-locked-msg{background:var(--c1);border:1px solid var(--bd);border-radius:13px;padding:24px 16px;text-align:center;color:var(--tx3);font-size:var(--sm);line-height:1.6}
 .dia-tog.fixed{cursor:default}
 
@@ -484,13 +488,17 @@ textarea.fctrl{ resize:none; line-height:1.6; }
      MENÚ
 ═══════════════════════════════════════════════════════════ -->
 <div class="screen" id="s-menu">
-  <div class="topbar">
+  <div class="topbar" id="menu-topbar">
     <span class="topbar-title">Menú semanal</span>
     <div class="topbar-av">ML</div>
   </div>
-  <div id="menu-banner" style="margin:0 var(--pad) 10px"></div>
-  <div class="day-tabs-scroll" id="day-tabs"></div>
-  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 var(--pad) 8px" id="platos-wrap"></div>
+  <div id="menu-banner" style="margin:0 var(--pad) 10px;flex-shrink:0"></div>
+  <!-- Vista: lista de días -->
+  <div id="menu-day-list" style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
+  <!-- Vista: platos del día (oculta por defecto) -->
+  <div id="menu-platos-view" style="display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0">
+    <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 var(--pad) 8px" id="platos-wrap"></div>
+  </div>
 </div>
 
 
@@ -572,8 +580,10 @@ const DIAS_KEY =['lun','mar','mie','jue','vie'];
 const DIAS_CORTO=['Lun','Mar','Mié','Jue','Vie'];
 const DIAS_7    =['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 const DIAS_7K   =['lun','mar','mie','jue','vie','sab','dom'];
+const DIAS_LONG =['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
 
 let diasActivos={lun:true,mar:true,mie:true,jue:true,vie:true,sab:false,dom:false};
+let diasPausados={lun:false,mar:false,mie:false,jue:false,vie:false,sab:false,dom:false};
 let vacaciones=false;
 let selDay=0;
 
@@ -893,31 +903,91 @@ function togEnt(ci,ei){
 
 // ── MENÚ ───────────────────────────────────────────────────────
 function renderMenu(){
-  // Arrange el tab seleccionado al primer día editable
-  if(isSun()){
-    selDay=0;
-  } else {
-    const ti=todayMenuIdx();
-    selDay=ti===-1?4:ti;
-  }
+  // Siempre volver a la lista al entrar
+  document.getElementById('menu-day-list').style.display='';
+  document.getElementById('menu-platos-view').style.display='none';
+  document.getElementById('menu-topbar').innerHTML=
+    `<span class="topbar-title">Menú semanal</span><div class="topbar-av">ML</div>`;
   renderBanner('menu-banner','menu-timer');
-  renderDayTabs();
+  renderDayList();
+}
+
+function renderDayList(){
+  const wk=weekDates();       // 7 días semana actual
+  const mwk=menuWeekDates();  // 5 días Lun-Vie (próx. semana si domingo)
+  const todayIdx=todayMenuIdx();
+
+  const rows=DIAS_7K.map((key,i)=>{
+    const isWeekend=i>=5;
+    let state, date;
+
+    if(isWeekend){
+      state=diasActivos[key]?'activo':'off';
+      date=wk[i];
+    } else {
+      date=mwk[i];
+      if(isSun())           state='activo';
+      else if(todayIdx===-1) state='pasado';
+      else if(i<todayIdx)    state='pasado';
+      else if(i===todayIdx)  state='hoy';
+      else                   state='activo';
+    }
+
+    const isActive=state==='activo'||state==='hoy';
+    const isDimmed=state==='pasado'||state==='off';
+    const isNav=isActive&&!isWeekend;
+    const paused=diasPausados[key];
+
+    const badgeMap={pasado:'badge-pasado',hoy:'badge-hoy',activo:'badge-activo',off:'badge-off'};
+    const badgeLbl={pasado:'Pasado',hoy:'Hoy',activo:'Activo',off:'Off'};
+
+    const plCount=(MENU[key]||[]).length;
+    let sub='';
+    if(isActive&&paused)    sub='⏸ Pausado';
+    else if(isActive)       sub=plCount?`${plCount} plato${plCount>1?'s':''}`:'Sin platos cargados';
+
+    return`<div class="menu-day-item ${isNav?'clickable':''} ${isDimmed?'dimmed':''}"
+                ${isNav?`onclick="goToDayPlatos(${i})"`:''}>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px">
+          <span class="menu-day-nm">${DIAS_LONG[i]} ${date.getDate()}</span>
+          <span class="menu-day-badge ${badgeMap[state]}">${badgeLbl[state]}</span>
+        </div>
+        ${sub?`<div class="menu-day-date">${sub}</div>`:''}
+      </div>
+      ${isActive?`<div class="switch ${paused?'':'grn'}" onclick="togDiaPause('${key}',event)"></div>`:''}
+      ${isNav?`<span style="color:var(--tx3);font-size:18px;margin-left:4px;flex-shrink:0">›</span>`:''}
+    </div>`;
+  }).join('');
+
+  document.getElementById('menu-day-list').innerHTML=rows;
+}
+
+function goToDayPlatos(idx){
+  selDay=idx;
+  const date=menuWeekDates()[idx];
+  document.getElementById('menu-day-list').style.display='none';
+  document.getElementById('menu-platos-view').style.display='flex';
+  document.getElementById('menu-topbar').innerHTML=
+    `<button class="menu-back-btn" onclick="goBackToList()">‹ Volver</button>
+     <span class="topbar-title">${DIAS_LONG[idx]} ${date.getDate()}</span>
+     <div class="topbar-av">ML</div>`;
   renderPlatos();
 }
 
-function renderDayTabs(){
-  const wk=menuWeekDates();
-  document.getElementById('day-tabs').innerHTML=
-    DIAS_KEY.map((d,i)=>{
-      const editable=getDayEditable(i);
-      return`<div class="day-tab ${i===selDay?'on':''} ${!editable?'blocked':''}" onclick="selD(${i})">
-        <span class="day-tab-nm">${DIAS_CORTO[i]}</span>
-        <span class="day-tab-n">${wk[i].getDate()}</span>
-      </div>`;
-    }).join('');
+function goBackToList(){
+  document.getElementById('menu-day-list').style.display='';
+  document.getElementById('menu-platos-view').style.display='none';
+  document.getElementById('menu-topbar').innerHTML=
+    `<span class="topbar-title">Menú semanal</span><div class="topbar-av">ML</div>`;
+  renderDayList();
 }
 
-function selD(i){ selDay=i; renderDayTabs(); renderPlatos(); }
+function togDiaPause(key,e){
+  e.stopPropagation();
+  diasPausados[key]=!diasPausados[key];
+  renderDayList();
+}
 
 const ICONS=['🍖','🍗','🥧','🥘','🍲','🥗','🍝','🍛','🫕','🥩','🐟','🌯','🥚','🍳'];
 
