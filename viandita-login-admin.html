@@ -299,11 +299,54 @@ body{
 </div>
 
 <script>
-// Credenciales (en producción esto va en Supabase Auth)
-const CREDS={ user:'admin', pass:'viandita2026' };
+const CREDS={
+  user:'8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918',
+  pass:'d8179447a611467e9f86d1433b0bb04d1e2902f7fd7361930ab1315d4c02a233'
+};
+const RL_KEY='rl_admin';
+const MAX_ATTEMPTS=5;
+const LOCK_MS=5*60*1000;
 
 let eyeOpen=false;
 let cbOn=false;
+
+async function sha256(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function getRl(){try{return JSON.parse(localStorage.getItem(RL_KEY))||{};}catch{return {};}}
+function setRl(d){localStorage.setItem(RL_KEY,JSON.stringify(d));}
+
+function lockRemaining(){
+  const rl=getRl();
+  if(!rl.lockUntil) return 0;
+  const ms=rl.lockUntil-Date.now();
+  return ms>0?ms:0;
+}
+
+function checkAndShowLock(){
+  const ms=lockRemaining();
+  if(ms>0){
+    const secs=Math.ceil(ms/1000);
+    const m=Math.floor(secs/60),s=secs%60;
+    showError(`Demasiados intentos. Volvé a intentar en ${m}:${String(s).padStart(2,'0')}.`);
+    document.getElementById('btn-login').disabled=true;
+    return true;
+  }
+  if(getRl().lockUntil) setRl({});
+  return false;
+}
+
+function recordFail(){
+  const rl=getRl();
+  const attempts=(rl.attempts||0)+1;
+  if(attempts>=MAX_ATTEMPTS){setRl({attempts,lockUntil:Date.now()+LOCK_MS});}
+  else{setRl({attempts});}
+  return attempts;
+}
+
+function resetRl(){localStorage.removeItem(RL_KEY);}
 
 function toggleEye(){
   eyeOpen=!eyeOpen;
@@ -320,7 +363,7 @@ function showError(msg){
   const el=document.getElementById('error-msg');
   document.getElementById('error-txt').textContent=msg;
   el.classList.remove('show');
-  void el.offsetWidth; // reflow para re-disparar animation
+  void el.offsetWidth;
   el.classList.add('show');
   document.getElementById('wrap-user').classList.add('error');
   document.getElementById('wrap-pass').classList.add('error');
@@ -332,43 +375,44 @@ function clearError(){
   document.getElementById('wrap-pass').classList.remove('error');
 }
 
-function doLogin(){
+async function doLogin(){
+  if(checkAndShowLock()) return;
   clearError();
   const user=document.getElementById('inp-user').value.trim();
   const pass=document.getElementById('inp-pass').value;
   const btn=document.getElementById('btn-login');
 
-  if(!user||!pass){
-    showError('Completá usuario y contraseña.');
-    return;
-  }
+  if(!user||!pass){showError('Completá usuario y contraseña.');return;}
 
-  // Loading state
   btn.classList.add('loading');
   btn.disabled=true;
 
-  setTimeout(()=>{
-    if(user===CREDS.user && pass===CREDS.pass){
-      // Éxito
-      document.getElementById('login-card').style.display='none';
-      document.getElementById('success-card').style.display='block';
-      setTimeout(()=>{
-        document.getElementById('redirect-bar').style.width='100%';
-      },50);
-      setTimeout(()=>{
-        // Acá iría: window.location.href = '/admin/dashboard'
-        alert('En producción esto redirige a viandita-admin.html');
-        document.getElementById('login-card').style.display='block';
-        document.getElementById('success-card').style.display='none';
-        btn.classList.remove('loading');
-        btn.disabled=false;
-      },2200);
-    } else {
+  const [hu,hp]=await Promise.all([sha256(user),sha256(pass)]);
+  await new Promise(r=>setTimeout(r,800));
+
+  if(hu===CREDS.user&&hp===CREDS.pass){
+    resetRl();
+    document.getElementById('login-card').style.display='none';
+    document.getElementById('success-card').style.display='block';
+    setTimeout(()=>{document.getElementById('redirect-bar').style.width='100%';},50);
+    setTimeout(()=>{
+      alert('En producción esto redirige a viandita-admin.html');
+      document.getElementById('login-card').style.display='block';
+      document.getElementById('success-card').style.display='none';
       btn.classList.remove('loading');
       btn.disabled=false;
-      showError('Usuario o contraseña incorrectos.');
+    },2200);
+  }else{
+    btn.classList.remove('loading');
+    const attempts=recordFail();
+    const remaining=MAX_ATTEMPTS-attempts;
+    if(remaining<=0){
+      showError('Demasiados intentos. Cuenta bloqueada por 5 minutos.');
+    }else{
+      showError(`Usuario o contraseña incorrectos. ${remaining} intento${remaining!==1?'s':''} restante${remaining!==1?'s':''}.`);
     }
-  },1200);
+    btn.disabled=lockRemaining()>0;
+  }
 }
 
 function forgotPwd(e){
@@ -376,10 +420,8 @@ function forgotPwd(e){
   alert('En producción esto envía un link de recuperación al email del admin.');
 }
 
-// Enter para loguear
-document.addEventListener('keydown',e=>{
-  if(e.key==='Enter') doLogin();
-});
+document.addEventListener('keydown',e=>{if(e.key==='Enter') doLogin();});
+document.addEventListener('DOMContentLoaded',()=>checkAndShowLock());
 </script>
 </body>
 </html>
