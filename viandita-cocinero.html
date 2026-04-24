@@ -6,7 +6,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#FFF8F0">
-<title>María Laura · Viandita</title>
+<title>Viandita</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -145,6 +145,8 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);max-width:500px;
 .powered{text-align:center;padding:20px 0 10px;font-size:var(--xs);color:var(--tx3)}
 .powered span{font-family:var(--fd);font-style:italic;color:var(--p)}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
 </head>
 <body>
 
@@ -155,10 +157,10 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);max-width:500px;
 
 <div class="profile">
   <div class="av-wrap">
-    <div class="av" id="av">ML</div>
+    <div class="av" id="av"></div>
     <div>
-      <div class="av-name" id="cook-nm">María Laura</div>
-      <div class="av-sp" id="cook-sp">Cocina casera tradicional</div>
+      <div class="av-name" id="cook-nm"></div>
+      <div class="av-sp" id="cook-sp"></div>
     </div>
   </div>
   <p class="bio" id="cook-bio"></p>
@@ -204,65 +206,135 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);max-width:500px;
 </div>
 
 <script>
-// ── DATOS DEL COCINERO ────────────────────────────────────────────
-const COOK = {
-  nm:"María Laura", init:"ML",
-  sp:"Cocina casera tradicional",
-  bio:"Cocinera hace 8 años. Hago la comida que me hubiese gustado recibir cuando trabajaba todo el día. Todo hecho en casa, con ingredientes frescos y amor de verdad.",
-  zone:"Palermo · Villa Crespo", days:"Lun–Vie", phone:"5491155555555",
-  rating:4.9, rev:87,
-  menuCargado: "2026-04-20", // domingo en que se cargó el menú
-  // principal = no se toca. acomp = puede variar hasta domingo 23:59
-  menu:[
-    {id:1, day:"Lun", nm:"Milanesa napolitana",  acomp:"Puré de papas casero",          price:9500,  icon:"🍖"},
-    {id:2, day:"Mar", nm:"Pollo al limón y ajo", acomp:"Arroz yamani y vegetales",      price:8800,  icon:"🍗"},
-    {id:3, day:"Mié", nm:"Tarta de espinaca",    acomp:"Ensalada verde con semillas",   price:7500,  icon:"🥧"},
-    {id:4, day:"Jue", nm:"Guiso de lentejas",    acomp:"Pan casero de masa madre",      price:7000,  icon:"🥘"},
-    {id:5, day:"Vie", nm:"Cazuela de pollo",     acomp:"Papas al horno y morrón",       price:8200,  icon:"🍲"},
-  ],
-  plans:[
-    {id:"p1", nm:"Pack 5 días",  desc:"1 vianda por día, lunes a viernes",  price:42000, saves:5500,  pop:false},
-    {id:"p2", nm:"Pack 10 días", desc:"2 semanas, 1 vianda/día lun-vie",    price:78000, saves:12000, pop:true},
-    {id:"p3", nm:"Pack mensual", desc:"4 semanas completas, lun a vie",     price:148000,saves:30000, pop:false},
-  ]
-};
+// ── SUPABASE ──────────────────────────────────────────────────────
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── ESTADO ────────────────────────────────────────────────────────
-let cart=[], selDay=0;
-const f=n=>'$'+n.toLocaleString('es-AR');
-const tot=()=>cart.reduce((s,i)=>s+i.price*i.qty,0);
-const cnt=()=>cart.reduce((s,i)=>s+i.qty,0);
-const qof=id=>{const x=cart.find(i=>i.id===id);return x?x.qty:0};
+let COOK = null, cart = [], selDay = 0;
+const f = n => '$' + n.toLocaleString('es-AR');
+const tot = () => cart.reduce((s, i) => s + i.price * i.qty, 0);
+const cnt = () => cart.reduce((s, i) => s + i.qty, 0);
+const qof = id => { const x = cart.find(i => i.id == id); return x ? x.qty : 0; };
 
 // ── HELPERS DE FECHA ──────────────────────────────────────────────
-function getWeekDates(){
-  // Lunes de esta semana
-  const now=new Date();
-  const day=now.getDay(); // 0=dom
-  const diffToMon=day===0?-6:(1-day);
-  const mon=new Date(now); mon.setDate(now.getDate()+diffToMon); mon.setHours(0,0,0,0);
-  return Array.from({length:5},(_,i)=>{
-    const d=new Date(mon); d.setDate(mon.getDate()+i); return d;
+function getMondayISO() {
+  const now = new Date(), day = now.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  const mon = new Date(now);
+  mon.setDate(now.getDate() + diff);
+  mon.setHours(0, 0, 0, 0);
+  return mon.toISOString().split('T')[0];
+}
+
+function getWeekDates() {
+  const now = new Date(), day = now.getDay();
+  const diffToMon = day === 0 ? -6 : (1 - day);
+  const mon = new Date(now);
+  mon.setDate(now.getDate() + diffToMon);
+  mon.setHours(0, 0, 0, 0);
+  return Array.from({ length: 5 }, (_, i) => {
+    const d = new Date(mon); d.setDate(mon.getDate() + i); return d;
   });
 }
 
-function isSundayOpen(){
-  const now=new Date();
-  return now.getDay()===0; // domingo
+function isSundayOpen() { return new Date().getDay() === 0; }
+function formatShortDate(d) { return d.getDate() + '/' + (d.getMonth() + 1); }
+
+// ── ESTADOS ESPECIALES ────────────────────────────────────────────
+function showNotFound() {
+  document.body.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:center;min-height:100dvh;font-family:'DM Sans',system-ui,sans-serif;flex-direction:column;gap:16px;color:#7A5C46;padding:32px;text-align:center">
+      <div style="font-size:48px">🍱</div>
+      <div style="font-family:'Fraunces',Georgia,serif;font-size:24px;font-weight:600;color:#2D1B0E">Cocinero no encontrado</div>
+      <div style="font-size:14px">No existe ningún cocinero con ese link. Verificá la dirección.</div>
+      <a href="viandita-landing.html" style="margin-top:8px;color:#D4552A;font-size:14px;font-weight:600">← Volver al inicio</a>
+    </div>`;
 }
 
-function formatShortDate(d){
-  return d.getDate()+'/'+(d.getMonth()+1);
+function showNoMenu() {
+  document.getElementById('day-tabs').innerHTML = '';
+  document.getElementById('dish-view').innerHTML = `
+    <div style="text-align:center;padding:48px 0;color:#B39480">
+      <div style="font-size:40px;margin-bottom:12px">📋</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px">Sin menú esta semana</div>
+      <div style="font-size:13px">El cocinero aún no cargó el menú de la semana.</div>
+    </div>`;
+}
+
+// ── CARGA DESDE SUPABASE ──────────────────────────────────────────
+async function loadAndRender() {
+  const slug = new URLSearchParams(window.location.search).get('slug');
+  if (!slug) { showNotFound(); return; }
+
+  const { data: cocinero, error } = await db
+    .from('cocineros')
+    .select('*')
+    .eq('slug', slug)
+    .eq('activo', true)
+    .maybeSingle();
+
+  if (error || !cocinero) { showNotFound(); return; }
+
+  const monday = getMondayISO();
+
+  const { data: semana } = await db
+    .from('semanas')
+    .select('id, semana_inicio')
+    .eq('cocinero_id', cocinero.id)
+    .eq('semana_inicio', monday)
+    .maybeSingle();
+
+  let menu = [];
+  if (semana) {
+    const { data: platos } = await db
+      .from('platos')
+      .select('*')
+      .eq('semana_id', semana.id)
+      .eq('activo', true)
+      .order('orden');
+    menu = (platos || []).map(p => ({
+      id: p.id, day: p.dia, nm: p.nombre,
+      acomp: p.acompanamiento, price: p.precio, icon: p.icono
+    }));
+  }
+
+  const { data: planesRaw } = await db
+    .from('planes')
+    .select('*')
+    .eq('cocinero_id', cocinero.id)
+    .eq('activo', true)
+    .order('precio');
+
+  COOK = {
+    nm: cocinero.nombre,
+    init: cocinero.iniciales,
+    sp: cocinero.especialidad,
+    bio: cocinero.bio || '',
+    zone: cocinero.zona,
+    days: 'Lun–Vie',
+    phone: cocinero.telefono,
+    rating: cocinero.rating,
+    rev: cocinero.reviews || 0,
+    menuCargado: semana ? semana.semana_inicio : monday,
+    menu,
+    plans: (planesRaw || []).map(p => ({
+      id: p.id, nm: p.nombre, desc: p.descripcion,
+      price: p.precio, saves: p.ahorro, pop: !!p.destacado
+    }))
+  };
+
+  init();
 }
 
 // ── INIT ──────────────────────────────────────────────────────────
-function init(){
-  document.title=COOK.nm+' · Viandita';
-  document.getElementById('av').textContent=COOK.init;
-  document.getElementById('cook-nm').textContent=COOK.nm;
-  document.getElementById('cook-sp').textContent=COOK.sp;
-  document.getElementById('cook-bio').textContent=COOK.bio;
-  document.getElementById('cook-chips').innerHTML=[
+function init() {
+  document.title = COOK.nm + ' · Viandita';
+  document.getElementById('av').textContent = COOK.init;
+  document.getElementById('cook-nm').textContent = COOK.nm;
+  document.getElementById('cook-sp').textContent = COOK.sp;
+  document.getElementById('cook-bio').textContent = COOK.bio;
+  document.getElementById('cook-chips').innerHTML = [
     `<span class="chip">📍 ${COOK.zone}</span>`,
     `<span class="chip">📅 ${COOK.days}</span>`,
     `<span class="chip">★ ${COOK.rating} (${COOK.rev})</span>`,
@@ -270,65 +342,63 @@ function init(){
 
   renderStatusBanner();
   renderWeekNav();
-  renderDayTabs();
-  renderDish();
-  renderPlans();
 
-  // seleccionar día actual si es lun-vie
-  const today=new Date().getDay();
-  if(today>=1&&today<=5) selDay=today-1;
-  renderDayTabs();
-  renderDish();
+  if (!COOK.menu.length) {
+    showNoMenu();
+  } else {
+    const today = new Date().getDay();
+    if (today >= 1 && today <= 5) selDay = today - 1;
+    renderDayTabs();
+    renderDish();
+  }
+
+  renderPlans();
 }
 
-function renderStatusBanner(){
-  const isOpen=isSundayOpen();
-  const d=new Date(COOK.menuCargado);
-  const loaded=`dom ${d.getDate()}/${d.getMonth()+1}`;
-  const wrap=document.getElementById('status-banner-wrap');
-  if(isOpen){
-    wrap.innerHTML=`<div class="status-banner open" style="margin:16px var(--pad) 0">
+function renderStatusBanner() {
+  const isOpen = isSundayOpen();
+  const d = new Date(COOK.menuCargado + 'T00:00:00');
+  const loaded = `lun ${d.getDate()}/${d.getMonth() + 1}`;
+  const wrap = document.getElementById('status-banner-wrap');
+  if (isOpen) {
+    wrap.innerHTML = `<div class="status-banner open" style="margin:16px var(--pad) 0">
       <div class="status-dot"></div>
       <div class="status-txt"><strong>Menú abierto para edición</strong> — cierra hoy a las 23:59</div>
     </div>`;
   } else {
-    wrap.innerHTML=`<div class="status-banner confirmed" style="margin:16px var(--pad) 0">
+    wrap.innerHTML = `<div class="status-banner confirmed" style="margin:16px var(--pad) 0">
       <div class="status-dot"></div>
-      <div class="status-txt"><strong>Menú confirmado</strong> — cargado el ${loaded} · solo puede variar el acompañamiento</div>
+      <div class="status-txt"><strong>Menú confirmado</strong> — semana del ${loaded} · solo puede variar el acompañamiento</div>
     </div>`;
   }
 }
 
-function renderWeekNav(){
-  const dates=getWeekDates();
-  const first=dates[0], last=dates[4];
-  document.getElementById('week-range').textContent=
-    formatShortDate(first)+' – '+formatShortDate(last);
+function renderWeekNav() {
+  const dates = getWeekDates();
+  document.getElementById('week-range').textContent =
+    formatShortDate(dates[0]) + ' – ' + formatShortDate(dates[4]);
 }
 
-function renderDayTabs(){
-  const dates=getWeekDates();
-  const todayIdx=new Date().getDay()-1; // 0=lun
-  document.getElementById('day-tabs').innerHTML=COOK.menu.map((item,i)=>{
-    const d=dates[i];
-    const isOn=i===selDay;
-    const isToday=i===todayIdx;
-    return`<div class="day-tab ${isOn?'on':''} ${isToday&&!isOn?'today':''}" onclick="selectDay(${i})">
+function renderDayTabs() {
+  const dates = getWeekDates();
+  const todayIdx = new Date().getDay() - 1;
+  document.getElementById('day-tabs').innerHTML = COOK.menu.map((item, i) => {
+    const d = dates[i];
+    const isOn = i === selDay, isToday = i === todayIdx;
+    return `<div class="day-tab ${isOn ? 'on' : ''} ${isToday && !isOn ? 'today' : ''}" onclick="selectDay(${i})">
       <span class="day-tab-name">${item.day}</span>
       <span class="day-tab-num">${d.getDate()}</span>
     </div>`;
   }).join('');
 }
 
-function selectDay(i){
-  selDay=i; renderDayTabs(); renderDish();
-}
+function selectDay(i) { selDay = i; renderDayTabs(); renderDish(); }
 
-function renderDish(){
-  const item=COOK.menu[selDay];
-  const q=qof(item.id);
-  const isOpen=isSundayOpen();
-  document.getElementById('dish-view').innerHTML=`
+function renderDish() {
+  const item = COOK.menu[selDay];
+  const q = qof(item.id);
+  const isOpen = isSundayOpen();
+  document.getElementById('dish-view').innerHTML = `
     <div class="dish-card">
       <div class="dish-top">
         <div class="dish-icon">${item.icon}</div>
@@ -340,24 +410,29 @@ function renderDish(){
       <div class="acomp-block">
         <div class="acomp-label">
           <span>Acompañamiento</span>
-          <span class="lock-icon">${isOpen?'✏️':'🔒'}</span>
+          <span class="lock-icon">${isOpen ? '✏️' : '🔒'}</span>
         </div>
         <div class="acomp-val">${item.acomp}</div>
       </div>
       <div class="add-row">
-        <span class="add-note">Entrega: ${COOK.menu[selDay].day.toLowerCase()}</span>
+        <span class="add-note">Entrega: ${item.day.toLowerCase()}</span>
         <div class="qty-row">
-          ${q?`<button class="qb" onclick="chg(${item.id},-1)">−</button><span class="qn">${q}</span>`:''}
-          <button class="qb add" onclick="chg(${item.id},1)">+</button>
+          ${q ? `<button class="qb" onclick="chg('${item.id}',-1)">−</button><span class="qn">${q}</span>` : ''}
+          <button class="qb add" onclick="chg('${item.id}',1)">+</button>
         </div>
       </div>
     </div>`;
 }
 
-function renderPlans(){
-  document.getElementById('plans-list').innerHTML=COOK.plans.map(p=>`
-    <div class="plan-card ${p.pop?'pop':''}">
-      ${p.pop?'<div class="plan-badge">Más popular</div>':''}
+function renderPlans() {
+  if (!COOK.plans.length) {
+    document.getElementById('plans-list').innerHTML = `
+      <div style="text-align:center;padding:48px 0;color:#B39480;font-size:13px">Sin planes disponibles.</div>`;
+    return;
+  }
+  document.getElementById('plans-list').innerHTML = COOK.plans.map(p => `
+    <div class="plan-card ${p.pop ? 'pop' : ''}">
+      ${p.pop ? '<div class="plan-badge">Más popular</div>' : ''}
       <div class="plan-nm">${p.nm}</div>
       <div class="plan-desc">${p.desc}</div>
       <div class="plan-pr-row">
@@ -369,67 +444,68 @@ function renderPlans(){
 }
 
 // ── CARRITO ───────────────────────────────────────────────────────
-function chg(id,d){
-  const it=COOK.menu.find(i=>i.id===id),ex=cart.find(i=>i.id===id);
-  if(ex){ex.qty=Math.max(0,ex.qty+d);if(!ex.qty)cart=cart.filter(i=>i.id!==id);}
-  else if(d>0)cart.push({...it,qty:1});
+function chg(id, d) {
+  const it = COOK.menu.find(i => i.id == id), ex = cart.find(i => i.id == id);
+  if (ex) { ex.qty = Math.max(0, ex.qty + d); if (!ex.qty) cart = cart.filter(i => i.id != id); }
+  else if (d > 0) cart.push({ ...it, qty: 1 });
   renderDish(); updateBar();
 }
 
-function addPlan(pid){
-  const p=COOK.plans.find(x=>x.id===pid);
-  if(!cart.find(i=>i.id===pid))cart.push({id:pid,nm:p.nm,price:p.price,qty:1,isPlan:true});
+function addPlan(pid) {
+  const p = COOK.plans.find(x => x.id == pid);
+  if (!cart.find(i => i.id == pid)) cart.push({ id: pid, nm: p.nm, price: p.price, qty: 1, isPlan: true });
   updateBar(); openCart();
 }
 
-function rm(id){cart=cart.filter(i=>i.id!==id);renderCart();updateBar();}
+function rm(id) { cart = cart.filter(i => i.id != id); renderCart(); updateBar(); }
 
-function updateBar(){
-  const bar=document.getElementById('bar'),n=cnt();
-  bar.style.opacity=n?'1':'0';bar.style.pointerEvents=n?'auto':'none';
-  document.getElementById('bar-amt').textContent=f(tot())+` (${n} item${n!==1?'s':''})`;
+function updateBar() {
+  const bar = document.getElementById('bar'), n = cnt();
+  bar.style.opacity = n ? '1' : '0';
+  bar.style.pointerEvents = n ? 'auto' : 'none';
+  document.getElementById('bar-amt').textContent = f(tot()) + ` (${n} item${n !== 1 ? 's' : ''})`;
 }
 
-function openCart(){renderCart();document.getElementById('overlay').classList.add('open');}
-function closeCart(){document.getElementById('overlay').classList.remove('open');}
-function maybeClose(e){if(e.target===document.getElementById('overlay'))closeCart();}
+function openCart() { renderCart(); document.getElementById('overlay').classList.add('open'); }
+function closeCart() { document.getElementById('overlay').classList.remove('open'); }
+function maybeClose(e) { if (e.target === document.getElementById('overlay')) closeCart(); }
 
-function renderCart(){
-  const items=document.getElementById('c-items'),foot=document.getElementById('c-foot');
-  if(!cart.length){
-    items.innerHTML=`<div class="empty"><div style="font-size:42px;margin-bottom:10px">🍱</div>Tu pedido está vacío</div>`;
-    foot.innerHTML='';return;
+function renderCart() {
+  const items = document.getElementById('c-items'), foot = document.getElementById('c-foot');
+  if (!cart.length) {
+    items.innerHTML = `<div class="empty"><div style="font-size:42px;margin-bottom:10px">🍱</div>Tu pedido está vacío</div>`;
+    foot.innerHTML = ''; return;
   }
-  items.innerHTML=cart.map(i=>`
+  items.innerHTML = cart.map(i => `
     <div class="c-item">
       <div class="c-info">
         <div class="c-nm">${i.nm}</div>
-        <div class="c-sub">${i.isPlan?'Plan':'Vianda'} · x${i.qty}</div>
+        <div class="c-sub">${i.isPlan ? 'Plan' : 'Vianda'} · x${i.qty}</div>
       </div>
-      <div class="c-pr">${f(i.price*i.qty)}</div>
+      <div class="c-pr">${f(i.price * i.qty)}</div>
       <button class="rm" onclick="rm('${i.id}')">×</button>
     </div>`).join('');
-  const t=tot(),env=2500;
-  const msg=encodeURIComponent(`¡Hola ${COOK.nm}! Quiero hacer un pedido:\n\n`+
-    cart.map(i=>`• ${i.nm} x${i.qty} — ${f(i.price*i.qty)}`).join('\n')+
-    `\n\nTotal: ${f(t+env)} (incluye envío)\n\n¡Gracias!`);
-  foot.innerHTML=`
+  const t = tot(), env = 2500;
+  const msg = encodeURIComponent(`¡Hola ${COOK.nm}! Quiero hacer un pedido:\n\n` +
+    cart.map(i => `• ${i.nm} x${i.qty} — ${f(i.price * i.qty)}`).join('\n') +
+    `\n\nTotal: ${f(t + env)} (incluye envío)\n\n¡Gracias!`);
+  foot.innerHTML = `
     <div class="sum-row"><span>Subtotal</span><span>${f(t)}</span></div>
     <div class="sum-row"><span>Envío estimado</span><span>${f(env)}</span></div>
-    <div class="sum-row total"><span>Total</span><span>${f(t+env)}</span></div>
+    <div class="sum-row total"><span>Total</span><span>${f(t + env)}</span></div>
     <button class="wa-btn" onclick="window.open('https://wa.me/${COOK.phone}?text=${msg}','_blank')">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
       Pedir por WhatsApp
     </button>`;
 }
 
-function doTab(t){
-  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',(i===0&&t==='menu')||(i===1&&t==='planes')));
-  document.getElementById('pane-menu').classList.toggle('on',t==='menu');
-  document.getElementById('pane-planes').classList.toggle('on',t==='planes');
+function doTab(t) {
+  document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('on', (i === 0 && t === 'menu') || (i === 1 && t === 'planes')));
+  document.getElementById('pane-menu').classList.toggle('on', t === 'menu');
+  document.getElementById('pane-planes').classList.toggle('on', t === 'planes');
 }
 
-init();
+document.addEventListener('DOMContentLoaded', loadAndRender);
 </script>
 </body>
 </html>
