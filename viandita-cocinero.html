@@ -223,8 +223,11 @@ function getMondayISO() {
   const diff = day === 0 ? -6 : 1 - day;
   const mon = new Date(now);
   mon.setDate(now.getDate() + diff);
-  mon.setHours(0, 0, 0, 0);
-  return mon.toISOString().split('T')[0];
+  // Usar getters locales para evitar que toISOString() desfase el día al convertir a UTC
+  const y = mon.getFullYear();
+  const m = String(mon.getMonth() + 1).padStart(2, '0');
+  const d = String(mon.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 function getWeekDates() {
