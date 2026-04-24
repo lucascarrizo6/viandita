@@ -244,12 +244,46 @@ tr:hover td{ background:var(--c2); }
 .fctrl::placeholder{ color:var(--tx3); }
 select.fctrl option{ background:var(--sur); }
 .modal-footer{ display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+
+/* ─── MOBILE ────────────────────────────────────────────────── */
+.menu-toggle{
+  display:none; position:fixed; top:16px; left:16px; z-index:201;
+  width:36px; height:36px; border-radius:9px;
+  background:var(--sur); border:1px solid var(--bd2);
+  align-items:center; justify-content:center;
+  cursor:pointer; font-size:18px; color:var(--tx2);
+}
+.sb-backdrop{
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,.55); z-index:199;
+}
+@media(max-width:720px){
+  body{ display:block; }
+  .menu-toggle{ display:flex; }
+  .sidebar{
+    position:fixed; left:calc(-1 * var(--sidebar)); top:0; bottom:0;
+    z-index:200; transition:left .25s ease;
+    min-height:100dvh; height:100dvh;
+  }
+  .sidebar.open{ left:0; }
+  .sb-backdrop.open{ display:block; }
+  .main{ min-height:100dvh; }
+  .topbar{ padding-left:64px; }
+  .content{ padding:16px; }
+  .stats-row{ grid-template-columns:1fr 1fr; }
+  .detail-grid{ grid-template-columns:1fr; }
+  .table-wrap{ overflow-x:auto; }
+  table{ min-width:540px; }
+  .search-box input{ width:100px; }
+}
 </style>
 </head>
 <body>
 
 <!-- ═══════ SIDEBAR ═══════ -->
-<aside class="sidebar">
+<button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">☰</button>
+<div class="sb-backdrop" id="sb-backdrop" onclick="closeSidebar()"></div>
+<aside class="sidebar" id="sidebar">
   <div class="sb-logo">viandita <span class="sb-logo-tag">ADMIN</span></div>
   <nav class="sb-nav">
     <div class="sb-section">General</div>
@@ -509,7 +543,7 @@ select.fctrl option{ background:var(--sur); }
 let COCINEROS=[
   {id:1,nm:'María Laura',init:'ML',slug:'marialauara',zona:'Palermo · CABA',  plan:'Pro',    menuOk:true, pago:'al-dia', prox:'01/05',activo:true},
   {id:2,nm:'Facundo Fit', init:'FF',slug:'facundofit', zona:'Belgrano · CABA', plan:'Pro',    menuOk:true, pago:'al-dia', prox:'05/05',activo:true},
-  {id:3,nm:'Carla R.',    init:'CR',slug:'clarlaR',    zona:'Palermo · CABA',  plan:'Básico', menuOk:false,pago:'vence',  prox:'22/04',activo:true},
+  {id:3,nm:'Carla R.',    init:'CR',slug:'carlar',    zona:'Palermo · CABA',  plan:'Básico', menuOk:false,pago:'vence',  prox:'22/04',activo:true},
   {id:4,nm:'Diego M.',    init:'DM',slug:'diegom',     zona:'Flores · CABA',   plan:'Anual',  menuOk:true, pago:'al-dia', prox:'01/12',activo:true},
   {id:5,nm:'Sole V.',     init:'SV',slug:'solev',      zona:'San Telmo · CABA',plan:'Trial',  menuOk:false,pago:'trial',  prox:'25/04',activo:true},
   {id:6,nm:'Marta L.',    init:'ML',slug:'martal',     zona:'Caballito · CABA',plan:'Básico', menuOk:true, pago:'vencido',prox:'10/04',activo:false},
@@ -540,8 +574,19 @@ const PAGOS=[
   {nm:'Ana P.',      init:'AP',plan:'Básico',  monto:'$8.000', ultimo:'08/03',prox:'08/04',estado:'vencido'},
 ];
 
+// ── MOBILE SIDEBAR ─────────────────────────────────────────────
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sb-backdrop').classList.toggle('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-backdrop').classList.remove('open');
+}
+
 // ── NAV ────────────────────────────────────────────────────────
 function go(name){
+  closeSidebar();
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('on'));
   document.getElementById('s-'+name).classList.add('on');
@@ -638,7 +683,7 @@ function toggleActivo(i){
 }
 
 function verLink(slug){
-  alert(`viandita.com.ar/${slug}\n\n(Cuando esté online abrirá la página del cocinero)`);
+  window.open('viandita-cocinero.html?slug='+slug,'_blank');
 }
 
 function eliminar(i){

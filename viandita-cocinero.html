@@ -144,11 +144,19 @@ body{font-family:var(--fb);background:var(--bg);color:var(--tx);max-width:500px;
 .empty{text-align:center;padding:48px 0;color:var(--tx3)}
 .powered{text-align:center;padding:20px 0 10px;font-size:var(--xs);color:var(--tx3)}
 .powered span{font-family:var(--fd);font-style:italic;color:var(--p)}
+
+/* LOADING OVERLAY */
+.page-loader{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:500;transition:opacity .3s}
+.page-loader.done{opacity:0;pointer-events:none}
+.loader-spin{width:36px;height:36px;border-radius:50%;border:3px solid var(--bd);border-top-color:var(--p);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
 </head>
 <body>
+
+<div id="page-loader" class="page-loader"><div class="loader-spin"></div></div>
 
 <div class="cover">
   <div class="cover-pattern"></div>
@@ -328,6 +336,8 @@ async function loadAndRender() {
   };
 
   init();
+  const loader = document.getElementById('page-loader');
+  if (loader) { loader.classList.add('done'); setTimeout(() => loader.remove(), 350); }
 }
 
 // ── INIT ──────────────────────────────────────────────────────────

@@ -396,11 +396,7 @@ async function doLogin(){
     document.getElementById('success-card').style.display='block';
     setTimeout(()=>{document.getElementById('redirect-bar').style.width='100%';},50);
     setTimeout(()=>{
-      alert('En producción esto redirige a viandita-admin.html');
-      document.getElementById('login-card').style.display='block';
-      document.getElementById('success-card').style.display='none';
-      btn.classList.remove('loading');
-      btn.disabled=false;
+      window.location.href='viandita-admin.html';
     },2200);
   }else{
     btn.classList.remove('loading');
