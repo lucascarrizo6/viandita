@@ -355,9 +355,165 @@ textarea.fctrl{ resize:none; line-height:1.6; }
 .dia-tog-dot{ width:6px; height:6px; border-radius:50%; background:var(--bd2); transition:background .15s; }
 .dia-tog.on .dia-tog-dot{ background:var(--p); }
 .vac-box{ background:var(--c1); border:1px solid var(--bd); border-radius:13px; padding:14px 16px; }
+
+/* ─── DESKTOP SIDEBAR (oculta en mobile) ─────────────────── */
+.dsk-sidebar{display:none}
+
+/* ══════════════════════════════════════════════════════════
+   DESKTOP — 768px+
+══════════════════════════════════════════════════════════ */
+@media(min-width:768px){
+
+  body{max-width:1280px}
+
+  /* Layout raíz: flex row */
+  .desk-layout{display:flex;min-height:100dvh}
+
+  /* ── Sidebar ── */
+  .dsk-sidebar{
+    display:flex;flex-direction:column;
+    width:220px;flex-shrink:0;
+    position:sticky;top:0;height:100dvh;overflow-y:auto;
+    background:var(--sur);border-right:1px solid var(--bd);
+  }
+  .dsk-logo-wrap{
+    padding:24px 20px 18px;
+    border-bottom:1px solid var(--bd);flex-shrink:0;
+  }
+  .dsk-logo-txt{
+    display:block;font-family:var(--fd);font-style:italic;
+    font-size:22px;color:var(--p);margin-bottom:6px;
+  }
+  .dsk-tag{
+    font-size:9px;font-weight:700;letter-spacing:1.8px;
+    text-transform:uppercase;color:var(--tx3);
+  }
+  .dsk-av-wrap{
+    display:flex;align-items:center;gap:10px;
+    padding:14px 20px;border-bottom:1px solid var(--bd);flex-shrink:0;
+  }
+  .dsk-av{
+    width:36px;height:36px;border-radius:50%;
+    background:var(--p);color:#fff;
+    font-family:var(--fd);font-size:13px;font-weight:600;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .dsk-av-nm{
+    font-size:14px;font-weight:500;color:var(--tx);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .dsk-nav{display:flex;flex-direction:column;padding:8px 0;flex:1}
+  .dsk-ni{
+    display:flex;align-items:center;gap:12px;
+    padding:13px 20px;background:none;border:none;
+    color:var(--tx3);cursor:pointer;
+    font-family:var(--fb);font-size:14px;font-weight:500;
+    text-align:left;width:100%;
+    transition:color .15s,background .15s;
+    position:relative;
+  }
+  .dsk-ni:hover{color:var(--tx2);background:var(--c1)}
+  .dsk-ni.on{color:var(--p);background:var(--plt)}
+  .dsk-ni.on::before{
+    content:'';position:absolute;left:0;top:0;bottom:0;
+    width:3px;background:var(--p);border-radius:0 2px 2px 0;
+  }
+  .dsk-ni-ic{font-size:17px;width:22px;text-align:center;flex-shrink:0}
+
+  /* ── Columna principal ── */
+  .dsk-main{flex:1;min-width:0;overflow-x:hidden}
+
+  /* Ocultar bottom nav */
+  .bnav{display:none!important}
+
+  /* Screens: sin padding-bottom de nav */
+  .screen{padding-bottom:0}
+
+  /* Topbar: logo en sidebar, agregar borde y sticky */
+  .topbar-logo{display:none}
+  .topbar{
+    border-bottom:1px solid var(--bd);background:var(--sur);
+    position:sticky;top:0;z-index:100;
+  }
+
+  /* Stats: 4 columnas */
+  .stats-grid{grid-template-columns:repeat(4,1fr)}
+
+  /* Home: secciones inferiores en 2 cols */
+  .home-grid-lower{
+    display:grid;grid-template-columns:1fr 1fr;gap:0 28px;
+    padding:0 var(--pad);margin-bottom:20px;
+  }
+  .home-grid-lower .section-hdr{padding-left:0;padding-right:0}
+  .home-grid-lower .card{margin-left:0;margin-right:0}
+
+  /* Week strip: limitar ancho */
+  .week-strip{max-width:540px}
+
+  /* Pedidos: grillas 2 cols */
+  #pp-prod,#pp-hist{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:16px;align-content:start;
+  }
+  .prod-day,.hist-day{margin-bottom:0}
+
+  /* Combos: 2 cols */
+  #combos-wrap{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:16px;align-content:start;
+  }
+  .combo-card{margin-bottom:0}
+
+  /* Planes: 3 cols */
+  #planes-wrap{
+    display:grid;grid-template-columns:repeat(3,1fr);
+    gap:16px;align-content:start;
+  }
+  #planes-wrap .btn-add-plan{grid-column:1/-1}
+  .plan-card{margin-bottom:0}
+
+  /* Menú — platos: 2 cols */
+  #platos-wrap{
+    display:grid;grid-template-columns:1fr 1fr;
+    gap:16px;align-content:start;
+    padding:16px var(--pad) 8px;
+  }
+  #platos-wrap .btn-add-plato{grid-column:1/-1}
+  .plato-card{margin-bottom:0}
+
+  /* Menú — lista de días: ancho limitado */
+  #menu-day-list{max-width:680px}
+
+}
 </style>
 </head>
 <body>
+
+<!-- ── LAYOUT WRAPPER (flex en desktop) ── -->
+<div class="desk-layout">
+
+<!-- ── SIDEBAR DESKTOP ── -->
+<aside class="dsk-sidebar">
+  <div class="dsk-logo-wrap">
+    <span class="dsk-logo-txt">viandita</span>
+    <span class="dsk-tag">Cocinero</span>
+  </div>
+  <div class="dsk-av-wrap">
+    <div class="dsk-av">ML</div>
+    <div class="dsk-av-nm">María Laura</div>
+  </div>
+  <nav class="dsk-nav">
+    <button class="dsk-ni on" id="dsk-nav-home"    onclick="go('home')">   <span class="dsk-ni-ic">⊞</span> Inicio</button>
+    <button class="dsk-ni"    id="dsk-nav-pedidos" onclick="go('pedidos')"> <span class="dsk-ni-ic">📋</span> Pedidos</button>
+    <button class="dsk-ni"    id="dsk-nav-combos"  onclick="go('combos')">  <span class="dsk-ni-ic">📦</span> Combos</button>
+    <button class="dsk-ni"    id="dsk-nav-menu"    onclick="go('menu')">    <span class="dsk-ni-ic">🍱</span> Menú</button>
+    <button class="dsk-ni"    id="dsk-nav-planes"  onclick="go('planes')">  <span class="dsk-ni-ic">💰</span> Planes</button>
+    <button class="dsk-ni"    id="dsk-nav-perfil"  onclick="go('perfil')">  <span class="dsk-ni-ic">👤</span> Perfil</button>
+  </nav>
+</aside>
+
+<!-- ── CONTENIDO PRINCIPAL ── -->
+<div class="dsk-main">
 
 <!-- ═══════════════════════════════════════════════════════════
      HOME
@@ -405,12 +561,14 @@ textarea.fctrl{ resize:none; line-height:1.6; }
     </div>
   </div>
 
-  <!-- Preview últimos pedidos -->
+  <!-- Preview últimos pedidos + menú (grid 2-col en desktop) -->
+  <div class="home-grid-lower">
+  <div>
   <div class="section-hdr">
     <span class="section-title">Últimos pedidos</span>
     <span class="section-link" onclick="go('pedidos')">Ver todos</span>
   </div>
-  <div class="card" style="margin:0 var(--pad);padding:0;overflow:hidden">
+  <div class="card" style="margin:0;padding:0;overflow:hidden">
     <div class="row-item">
       <div class="row-icon">👤</div>
       <div class="row-info">
@@ -446,12 +604,15 @@ textarea.fctrl{ resize:none; line-height:1.6; }
     </div>
   </div>
 
-  <!-- Preview menú semana -->
+  </div><!-- /col pedidos -->
+  <div>
   <div class="section-hdr">
     <span class="section-title">Menú de esta semana</span>
     <span class="section-link" onclick="go('menu')">Editar</span>
   </div>
-  <div class="card" style="margin:0 var(--pad);padding:0;overflow:hidden" id="home-menu-prev"></div>
+  <div class="card" style="margin:0;padding:0;overflow:hidden" id="home-menu-prev"></div>
+  </div><!-- /col menu -->
+  </div><!-- /home-grid-lower -->
 </div>
 
 
@@ -560,6 +721,9 @@ textarea.fctrl{ resize:none; line-height:1.6; }
   </div>
 </div>
 
+
+</div><!-- /dsk-main -->
+</div><!-- /desk-layout -->
 
 <!-- ═══════════════════════════════════════════════════════════
      BOTTOM NAV
@@ -707,8 +871,11 @@ function weekDates(){
 function go(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.bni').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.dsk-ni').forEach(b=>b.classList.remove('on'));
   document.getElementById('s-'+name).classList.add('on');
   document.getElementById('nav-'+name).classList.add('on');
+  const dn=document.getElementById('dsk-nav-'+name);
+  if(dn) dn.classList.add('on');
   window.scrollTo(0,0);
   // Render bajo demanda
   if(name==='pedidos'){pedTab('prod');}
